@@ -1,0 +1,9 @@
+{
+  "label": "api",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Hayride HTTP APIs",
+    "slug": "/reference/api/"
+  }
+}

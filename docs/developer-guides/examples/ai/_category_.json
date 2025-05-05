@@ -2,7 +2,8 @@
     "label": "AI",
     "link": {
       "type": "generated-index",
-      "description": "Artifically Intelligent powered by Hayride"
+      "description": "Artifically Intelligent + Hayride",
+      "slug": "/developer-guides/examples/ai"
     }
   }
   
