@@ -11,5 +11,5 @@ curl https://docs.hayride.dev/install -sSf | bash
 ```
 
 :::info
-Linux installations coming soon!
+Cross platform installations coming soon!
 :::
