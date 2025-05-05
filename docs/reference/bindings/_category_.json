@@ -1,7 +1,10 @@
 {
   "label": "Bindings",
+  "position": 2, 
   "link": {
     "type": "generated-index",
-    "description": "Hayride Bindings"
+    "description": "Hayride Bindings",
+    "slug": "/reference/bindings/"
+
   }
 }
