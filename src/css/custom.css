@@ -1,0 +1,130 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+@import url('https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800&display=swap');
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary: #644ff0;
+  --ifm-color-primary-dark: #3d23ec;
+  --ifm-color-primary-darker: #3014eb;
+  --ifm-color-primary-darkest: #2a12ce;
+  --ifm-color-primary-light: #4a32ed;
+  --ifm-color-primary-lighter: #5740ef;
+  --ifm-color-primary-lightest: #644ff0;
+  --ifm-code-font-size: 95%;
+  --ifm-font-family-base: 'Poppins';
+
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+.footer {
+  background-image: url('/img/hayride-bg.jpg'); /* Make sure it's placed in /static/img/ */
+  background-repeat: repeat;
+  background-size: auto;
+  background-position: top left;
+  background-color: #18202b; /* optional fallback */
+  width: 100%;
+  min-height: 300px;
+  color: white;
+}
+/* Dark mode card color */
+html[data-theme='dark'] .card {
+  background-color: #1a202a;
+}
+
+/* Dark mode card color */
+html[data-theme='dark'] .pagination-nav__link  {
+  background-color: #1a202a;
+}
+
+
+.navbar {
+  height: 85px; 
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+
+.navbar__inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.navbar__logo {
+  padding-left: 16px; /* Adjust value as needed */
+}
+
+html[data-theme='dark'] .navbar {
+  background-color: #0D1015 !important;
+  border-bottom: 2px solid #31FFF9;
+  padding-top: 1rem;
+}
+
+
+
+[data-theme='light'] .footer {
+  border-top: 2px solid #644FF0;
+  padding-top: 1rem;
+}
+
+/* Darker sidebar link text for light mode */
+html[data-theme='light'] .menu__link {
+  color: #1a1a1a; /* Choose a darker gray or black */
+}
+
+/* Optional: Hover and active states */
+html[data-theme='light'] .menu__link:hover,
+html[data-theme='light'] .menu__link--active {
+  color: #644FF0;
+  font-weight: 500;
+}
+
+[data-theme='dark'] .footer {
+  border-top: 2px solid #31FFF9;
+  padding-top: 1rem;
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme='dark'] {
+  --ifm-color-primary: #31fff9;
+  --ifm-color-primary-dark: #13fff8;
+  --ifm-color-primary-darker: #03fff8;
+  --ifm-color-primary-darkest: #00d5cf;
+  --ifm-color-primary-light: #4ffffa;
+  --ifm-color-primary-lighter: #5ffffa;
+  --ifm-color-primary-lightest: #8cfffc;
+  --ifm-background-color: #0D1015;
+  --ifm-background-surface-color: #0D1015;
+
+  --ifm-font-family-base: 'Poppins';
+  
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  background-color: #0D1015;
+}
+
+.theme-doc-sidebar-menu.menu__list {
+ margin-left: 10px;
+ margin-right: 10px;
+}
+
+/* Target main markdown content */
+.markdown {
+  font-size: 0.9rem; /* Default is ~1rem */
+  line-height: 1.6;
+}
+
+/* Optionally, reduce headers too */
+.markdown h1 {
+  font-size: 2rem;
+}
+.markdown h2 {
+  font-size: 1.5rem;
+}
+.markdown h3 {
+  font-size: 1.25rem;
+}
