@@ -9,3 +9,7 @@ The easiest way to install Hayride is through our installation script. MacOS use
 ```bash
 curl https://docs.hayride.dev/install -sSf | bash
 ```
+
+:::info
+Linux installations coming soon!
+:::
