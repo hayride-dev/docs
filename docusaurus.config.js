@@ -18,7 +18,7 @@ const config = {
   url: 'https://docs.hayride.dev',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/docs/',
+  baseUrl: '/',
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   projectName: 'hayride-dev.github.io',
@@ -41,7 +41,7 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
-          path: "./",
+          path: "./docs",
           routeBasePath: "/",        
           sidebarPath: './sidebars.js',
           // Please change this to your repo.
