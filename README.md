@@ -1,41 +1,27 @@
-# Website
+# Hayride Docs 
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+This repository contains the source files for the Hayride documentation, which is built using Docusaurus. The documentation covers various aspects of the Hayride platform, including installation, usage, and development.
 
-### Installation
+## Local Development
 
-```
-$ yarn
-```
-
-### Local Development
+To run the documentation locally, follow these steps:
 
 ```
-$ yarn start
-```
+npm run start 
+``` 
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-### Build
+## Build 
 
 ```
-$ yarn build
+npm run build
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+This command will generate a static version of the documentation in the `build` directory. You can then deploy this directory to a web server or hosting service of your choice.
 
-### Deployment
 
-Using SSH:
-
+## Serve
 ```
-$ USE_SSH=true yarn deploy
+npm run serve
 ```
 
-Not using SSH:
-
-```
-$ GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+This command will serve the static files generated in the `build` directory. You can access the documentation at `http://localhost:3000`.
