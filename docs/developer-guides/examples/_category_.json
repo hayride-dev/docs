@@ -3,7 +3,8 @@
     "position": 5,
     "link": {
       "type": "generated-index",
-      "description": "Hayride Example Morphs"
+      "description": "Hayride Example Morphs",
+      "slug": "/developer-guides/examples/"
     }
   }
   
