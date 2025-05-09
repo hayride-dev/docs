@@ -38,6 +38,17 @@ As WebAssembly evolves from single binaries to composable systems, the **Compone
 
 Hayride builds on this model to run AI agents, tools, and morphs together in tightly controlled, interoperable environments.
 
+### WebAssembly Component 
+
+Per the [component model documentation](https://component-model.bytecodealliance.org/design/components.html) compoents can be by the following three perspectives:
+- **Logical** – components act as containers for modules—or even other components—that define their interfaces and dependencies using WIT.
+- **Conceptually** – components are self-contained units of code that communicate solely through defined interfaces, avoiding shared memory
+- **Physically** – a component is a WebAssembly file with a specific format. Inside, it may contain multiple core WebAssembly modules and nested components, linked together through their imports and exports.
+
+The external interface of a component—its imports and exports—represents a world, but the component itself determines how that world is realized internally.
+
+Interfaces are defined using [WIT](https://component-model.bytecodealliance.org/design/wit.html), which allows for a clear and consistent way to describe the functions and data that a component exposes through interface types. This enables components to be easily composed and reused, as they can be linked together based on their shared interfaces.
+
 ## WASI
 
 **WASI (WebAssembly System Interface)** defines standard APIs for accessing host resources safely and portably. Developed by the WebAssembly community, WASI brings system capabilities like I/O, clocks, and networking into sandboxed runtimes.

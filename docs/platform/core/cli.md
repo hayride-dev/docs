@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 title: CLI
 ---
 
@@ -39,8 +39,7 @@ The CLI includes the following `public` imports from the Hayride platform:
 - `hayride:http/client@0.0.46`: A WebAssembly HTTP client that allows the CLI to make HTTP requests to the Hayride platform.
 - `hayride:wac/imports@0.0.46`: WebAssembly Composition imports that provide `WAC` functionality for composing WebAssembly components.
 - `hayride:core/config@0.0.46`: Core configuration management for the Hayride platform, allowing the CLI to access and manage configuration settings.
-- `hayride:wasip2/imports@0.0.46`: WASI (WebAssembly System Interface) imports that provide standard system-level functionality for the CLI.
-- `hayride:wasip2/exports@0.0.46`: WASI exports that provide standard system-level functionality for the CLI.
+
 These imports provide the necessary functionality for the CLI to interact with the Hayride platform, including HTTP client capabilities, WAC (WebAssembly Component) imports, and core configuration management. Each of these imports is defined publicly in our [Coven](https://github.com/hayride-dev/coven) repository, allowing for additional implementations. 
 
 ### Private Imports/Exports
