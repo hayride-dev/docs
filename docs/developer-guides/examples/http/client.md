@@ -27,7 +27,11 @@ mkdir wit
 touch wit/world.wit
 ```
 
-In the `wit/world.wit` file, define the interface for your Morph. This interface will include a function to make an HTTP GET request:
+In the `wit/world.wit` file, define a world that will include the necessary imports and exports for a HTTP client.
+
+In this case, we will be using the `hayride:wasip2/imports` and `hayride:wasip2/exports` modules to provide the necessary WASI functionality. 
+
+Addtionally we will be using the `hayride:http/client` module to provide the HTTP client functionality. 
 
 ```wit
 package hayride-examples:http@0.0.1;
@@ -64,7 +68,7 @@ This will download the dependencies specified in the `deps.toml` file and place 
 The directory structure should look like this:
 
 ```
-deps
+wit/deps
 ├── cli
 │   ├── command.wit
 │   ├── environment.wit
@@ -215,6 +219,6 @@ This indicates that the Morph has been successfully executed and the HTTP respon
 
 Now that you have created a simple HTTP client using Hayride, you may want to check out the following resources:
 
-- [Hayride HTTP Server](./server): Learn how to create an HTTP server using Hayride.
-- [HTTP Client Reactor](./client-reactor): Explore how to create a Reactor component that uses the HTTP client.
+- [Hayride HTTP Server](./server.md): Learn how to create an HTTP server using Hayride.
+- [HTTP Client Reactor](./client-reactor.md): Explore how to create a Reactor component that uses the HTTP client.
 
