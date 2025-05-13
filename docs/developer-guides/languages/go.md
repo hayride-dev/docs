@@ -212,6 +212,6 @@ GET request successful: OK
 To run the Morph using Hayride, you can use the following command:
 
 ```sh
-hayride register --morph main.wasm --package example
-hayride cast --morph example:main --interactive
+hayride register --bin main.wasm --package example:main@0.0.1
+hayride cast --package example:main@0.0.1 --interactive
 ```

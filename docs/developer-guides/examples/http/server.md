@@ -133,7 +133,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/hayride-dev/bindings/go/exports/net/http/handle"
+	"github.com/hayride-dev/bindings/go/exports/net/http/server"
 )
 
 func init() {
@@ -144,8 +144,7 @@ func init() {
 		w.Write([]byte("Hello, World!"))
 	})
 
-	// hayride bindings for export
-	handle.Handler(mux)
+	server.Export(mux, server.Config{Address: "localhost:9000"})
 }
 
 func main() {}
@@ -153,7 +152,7 @@ func main() {}
 
 This is a simple Go program that creates a new HTTP server and registers a handler for the `/hello` endpoint. When accessed, it responds with "Hello, World!".
 
-The `handle.Handler(mux)` function is a Hayride binding that allows the HTTP server to be exported as a WebAssembly component. This is equivalent to http.NewServeMux() in the standard library, but it is specifically designed to work with Hayride's WebAssembly environment.
+The `server.Export` function is a Hayride binding that allows the HTTP server to be exported as a WebAssembly component. This is equivalent to http.ListenAndServe in the standard library, but it is specifically designed to work with Hayride's WebAssembly environment.
 
 While the hayride are being used in this example, any http package that implements the `wasi-http` interface can be used.
 
@@ -171,7 +170,7 @@ This command will compile the Morph to a WebAssembly binary. The `--wit-package`
 To register the Morph with the Hayride platform, we can use the `hayride` CLI. First, initialize the Hayride environment:
 
 ```bash
-hayride register --morph server.wasm --package hayride-examples --version 0.0.1
+hayride register --bin server.wasm --package hayride-examples:server@0.0.1
 ```
 
 ## Step 7: Cast the Morph
@@ -179,13 +178,13 @@ hayride register --morph server.wasm --package hayride-examples --version 0.0.1
 To cast the Morph, use the `hayride` CLI:
 
 ```bash
-hayride cast --morph hayride-examples:http@0.0.1:server 
+hayride cast --package hayride-examples:server@0.0.1
 ```
 
 using `curl` we can test the server:
 
 ```bash
-curl -X GET http://localhost:8080/hello
+curl -X GET http://localhost:9000/hello
 ```
 You should see the following output:
 

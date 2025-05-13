@@ -15,12 +15,12 @@ The server moprh itself is a WebAssembly Component that can be represented throu
 
 ```wit
 world server {
-    import hayride:core/config@0.0.46;
+    import wasi:config/store@0.2.0-draft;
 
-    include hayride:wasip2/imports@0.0.46;
+    include hayride:wasip2/imports@0.0.48;
+    include hayride:silo/imports@0.0.48;
 
-    include hayride:http/client-server@0.0.46;
-    include hayride:silo/imports@0.0.46;
+    include hayride:http/client-server@0.0.48;
 }
 ```
 The server world is made up of the wasip2 imports, but also includes the `hayride:http/client-server@0.0.46` export, which is wrapper around the wasi-http incoming and outgoing HTTP Handlers. 

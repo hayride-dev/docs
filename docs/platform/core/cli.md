@@ -13,15 +13,15 @@ The CLI moprh itself is a WebAssembly Component that can be represented through 
 
 ```wit
 world cli {
-    include hayride:wasip2/imports@0.0.46;
-    include hayride:wasip2/exports@0.0.46;
+    // import wasi:config/store@0.2.0-draft;
+    // import hayride:core/config@0.0.48;
 
-    include hayride:silo/imports@0.0.46;
-
-    include hayride:http/client@0.0.46;
-    include hayride:wac/imports@0.0.46;
-
-    import hayride:core/config@0.0.46;
+    include hayride:wasip2/imports@0.0.48;
+    include hayride:silo/imports@0.0.48;
+    include hayride:http/client@0.0.48;
+    include hayride:wac/imports@0.0.48;
+    
+    include hayride:wasip2/exports@0.0.48;
 }
 ```
 

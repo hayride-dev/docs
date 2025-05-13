@@ -75,7 +75,6 @@ Next, create a file called `main.go` in the root directory of your project. This
 
 ```bash
 go mod init hello-world
-go mod tidy
 touch main.go
 ```
 
@@ -110,7 +109,7 @@ This command will compile the Morph to a WebAssembly binary called `hello-world.
 To register the Morph with the Hayride platform, we can use the `hayride` CLI. First, initialize the Hayride environment:
 
 ```bash
-hayride register --morph hello-world.wasm --package hayride-examples --version 0.0.1
+hayride register --bin hello-world.wasm --package hayride-examples:hello-world@0.0.1
 ```
 
 ### Step 6: Cast the Morph
@@ -118,7 +117,7 @@ hayride register --morph hello-world.wasm --package hayride-examples --version 0
 To execute the Morph, we can use the `hayride` CLI to cast the Morph. Run the following command:
 
 ```bash
-hayride cast --morph hayride-examples:hello-world -it 
+hayride cast --package hayride-examples:hello-world@0.0.1 -it 
 ```
 
 This command will execute the Morph and print the output to the console. The `-it` flag indicates that we want to run the Morph in interactive mode.
