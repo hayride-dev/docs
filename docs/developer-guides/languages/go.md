@@ -215,3 +215,11 @@ To run the Morph using Hayride, you can use the following command:
 hayride register --bin main.wasm --package example:main@0.0.1
 hayride cast --package example:main@0.0.1 --interactive
 ```
+
+## Conculsion
+
+In this guide, we have walked through the process of building a Morph using Go and TinyGo. We defined a WIT interface, implemented the Morph logic, and compiled it to a Wasm binary. We also demonstrated how to run the Morph using both Wasmtime and Hayride.
+
+:::tip
+For more detailed information on how to build WebAssembly components with Go, we highly recommend reading the [Go language guide](https://component-model.bytecodealliance.org/language-support/go.html).
+:::
