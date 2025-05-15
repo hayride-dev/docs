@@ -44,6 +44,10 @@ The following tools are required to build and run this Morph:
 
 Please refer to the installation instructions for each tool to ensure you the correct installation and setup.
 
+:::tip
+See [Tools](../tools.md) for additional information on the Go tools.
+:::
+
 ### Step 1: Create a new Go/TinyGo Project
 
 Create a new directory for your Morph project and initialize a Go module:

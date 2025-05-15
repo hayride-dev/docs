@@ -12,6 +12,10 @@ If you are not familar with the Hayride platform or the various WebAssembly tool
 - [Go](https://go.dev/doc/install) version 1.23.0+
 - [TinyGo](https://tinygo.org/) version 0.33.0+
 
+:::tip
+See [Tools](../tools.md) for additional information on these tools.
+:::
+
 # Step 1: Create a new directory
 
 Create a new directory for your project and navigate into it:
