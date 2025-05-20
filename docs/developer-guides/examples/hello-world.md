@@ -6,7 +6,7 @@ description: Hello World example for Hayride
 
 This is a simple example of how to create a "Hello World" application using Hayride. We make the assumption that you have already installed the Hayride CLI and TinyGo. If you haven't done so, please refer to the [installation guide](../installation.md) for instructions.
 
-If you are not familar with the Hayride platform or the various WebAssembly tools, we recommend checking out the [Hayride Overview](../../overview.md) to get a better understanding of the platform and its capabilities. 
+If you are not familiar with the Hayride platform or the various WebAssembly tools, we recommend checking out the [Hayride Overview](../../overview.md) to get a better understanding of the platform and its capabilities. 
 
 ## Prerequisites
 - [Go](https://go.dev/doc/install) version 1.23.0+

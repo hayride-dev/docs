@@ -18,7 +18,7 @@ We recommend using TinyGo, which fully supports WASI 0.2 as of version [0.33.0](
 
 ## Tooling
 
-There are serveral tools available for building and publishing morphs in Go. 
+There are several tools available for building and publishing morphs in Go. 
 
 We recommend using the following tools for Go/TinyGo:  
 
@@ -113,7 +113,7 @@ world http-client {
 }
 ```
 
-There are a number of ways to add depenecies to WIT, Hayride leverages wit-deps to manage dependencies. You can learn more about wit-deps [here](../tools/wit-deps.md).
+There are a number of ways to add dependencies to WIT, Hayride leverages wit-deps to manage dependencies. You can learn more about wit-deps [here](../tools/wit-deps.md).
 
 ### Step 3: Write the Morph Code
 Create a new file called `main.go` in the root directory of your project. This file will contain the main logic for your Morph. 
@@ -220,7 +220,7 @@ hayride register --bin main.wasm --package example:main@0.0.1
 hayride cast --package example:main@0.0.1 --interactive
 ```
 
-## Conculsion
+## Conclusion
 
 In this guide, we have walked through the process of building a Morph using Go and TinyGo. We defined a WIT interface, implemented the Morph logic, and compiled it to a Wasm binary. We also demonstrated how to run the Morph using both Wasmtime and Hayride.
 

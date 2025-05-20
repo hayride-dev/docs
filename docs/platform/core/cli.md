@@ -5,11 +5,11 @@ title: CLI
 
 # Hayride CLI 
 
-The Hayride CLI moprh is a command-line tool that provides a convenient way to interact with the Hayride platform. It allows you to manage Morphs, run commands, and perform various operations related to the Hayride ecosystem. 
+The Hayride CLI morph is a command-line tool that provides a convenient way to interact with the Hayride platform. It allows you to manage Morphs, run commands, and perform various operations related to the Hayride ecosystem. 
 
 ## WIT Definition
 
-The CLI moprh itself is a WebAssembly Component that can be represented through the following WIT definition:
+The CLI morph itself is a WebAssembly Component that can be represented through the following WIT definition:
 
 ```wit
 world cli {
@@ -28,7 +28,7 @@ world cli {
 The cli world is made up of the wasip2 imports and exports as well as mixture of public and private imports from the Hayride. 
 
 :::caution
-The hayride platfrom is still in development and the CLI is subject to change. The WIT definition may not be fully stable and may be subject to change in future releases. 
+The hayride platform is still in development and the CLI is subject to change. The WIT definition may not be fully stable and may be subject to change in future releases. 
 
 Always refer to the git repository, [Coven](https://github.com/hayride-dev/coven), for the latest version of the CLI WIT definition.
 :::
@@ -44,10 +44,10 @@ These imports provide the necessary functionality for the CLI to interact with t
 
 ### Private Imports/Exports
 
-Hayride has `private` or `reserved` imports that are not intended for `public` use. These imports are restrcited to the Hayride platform and are used internally by the CLI. 
+Hayride has `private` or `reserved` imports that are not intended for `public` use. These imports are restricted to the Hayride platform and are used internally by the CLI. 
 
 They include:
-- `hayride:silo/imports@0.0.46`: Silo implements basic parallelism and concurrency primitives for the Hayride platform. It provides a way to run Morphs in parallel and manage their execution. This is not intended for public use and is reserved for the Hayride platform. More holistic Aysnc support is being discussed by the WebAssembly community and may replace this in the future.
+- `hayride:silo/imports@0.0.46`: Silo implements basic parallelism and concurrency primitives for the Hayride platform. It provides a way to run Morphs in parallel and manage their execution. This is not intended for public use and is reserved for the Hayride platform. More holistic Async support is being discussed by the WebAssembly community and may replace this in the future.
 
 :::info 
 For a complete overview Hayride's WIT definition, please refer to the our [reference documentation](../../reference/interfaces/)

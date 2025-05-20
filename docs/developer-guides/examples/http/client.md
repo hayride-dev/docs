@@ -35,7 +35,7 @@ In the `wit/world.wit` file, define a world that will include the necessary impo
 
 In this case, we will be using the `hayride:wasip2/imports` and `hayride:wasip2/exports` modules to provide the necessary WASI functionality. 
 
-Addtionally we will be using the `hayride:http/client` module to provide the HTTP client functionality. 
+Additionally we will be using the `hayride:http/client` module to provide the HTTP client functionality. 
 
 ```wit
 package hayride-examples:http@0.0.1;
