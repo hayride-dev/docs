@@ -25,7 +25,7 @@ Morphs are defined using WebAssembly Interface Types (WIT), which specify the im
     - Exports are commands or functions a Morph that can be imported by the runtime or other Morphs.
 - **Sandboxed:** Morphs execute in sandboxed environments with no implicit access to the host system.
     - All host access (files, time, networking) must be granted explicitly and comes via WASI or custom host imports.
-- **Composable:** Multiple Morphs can be linked together at compile time or programmaticlly using the component model’s support for composition.
+- **Composable:** Multiple Morphs can be linked together at compile time or programmatically using the component model’s support for composition.
     - This enables reusable, modular behaviors like filters, validators, or data transformers.
 - **Runtime Agnostic, Hayride Native**
     - While Morphs are portable across any runtime that supports WASI 0.2, Hayride provides a runtime environment tailored for executing Morphs that import native Hayride host functions.
