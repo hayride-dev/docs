@@ -62,7 +62,7 @@ Currently, we recommend using `wac`, which is a tool that uses the WAC (pronounc
 
 ### Example Composition 
 
-Below we will walk through a simple example of how to compose moprhs using the `wac` tool.
+Below we will walk through a simple example of how to compose morphs using the `wac` tool.
 
 First we will take a look the wit definition of the Morphs we want to compose.
 
@@ -77,7 +77,7 @@ world hello {
 }
 ```
 
-### Greeter Moprh WIT
+### Greeter Morph WIT
 
 ```
 package hayride:components;

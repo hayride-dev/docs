@@ -5,13 +5,13 @@ title: Server
 
 # Hayride Server
 
-The Hayride server moprh is a HTTP server that exposes a REST API for the Hayride platform. It is responsible for handling incoming HTTP requests and routing them to the appropriate handlers. 
+The Hayride server morph is a HTTP server that exposes a REST API for the Hayride platform. It is responsible for handling incoming HTTP requests and routing them to the appropriate handlers. 
 
-The [Hayride CLI](./cli.md) make requests to the server moprh to perform various tasks, such as casting morphs, starting and stopping morphs, and managing the Hayride platform.
+The [Hayride CLI](./cli.md) make requests to the server morph to perform various tasks, such as casting morphs, starting and stopping morphs, and managing the Hayride platform.
 
 ## WIT Definition
 
-The server moprh itself is a WebAssembly Component that can be represented through the following WIT definition:
+The server morph itself is a WebAssembly Component that can be represented through the following WIT definition:
 
 ```wit
 world server {
@@ -25,7 +25,7 @@ world server {
 ```
 The server world is made up of the wasip2 imports, but also includes the `hayride:http/client-server@0.0.46` export, which is wrapper around the wasi-http incoming and outgoing HTTP Handlers. 
 
-The HTTP server implemented is provided by the Hayride runtime. HTTP Request are passed to the server moprh, which then routes them to the appropriate handlers. 
+The HTTP server implemented is provided by the Hayride runtime. HTTP Request are passed to the server morph, which then routes them to the appropriate handlers.
 
 ### Public Imports
 - `hayride:http/client-server@0.0.46`
@@ -36,7 +36,7 @@ The HTTP server implemented is provided by the Hayride runtime. HTTP Request are
 
 ## Server Routes 
 
-The server moprh exposes the following routes:
+The server morph exposes the following routes:
 
 ```
 	castPath     = "/v1/cast"
