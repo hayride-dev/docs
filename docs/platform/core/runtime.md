@@ -85,5 +85,5 @@ Hayride provides two primary morphs that are essential for its operation:
 - **Server Morph**: The core component that handles incoming requests and manages the lifecycle of morphs.
 - **CLI Morph**: The command-line interface that allows users to interact with the Hayride runtime, manage morphs, and perform various tasks.
 
-As we continue to refine the cli and server, we plan to futher expose their interfaces to allow for custom CLI and Server morphs to be created. 
+As we continue to refine the cli and server, we plan to further expose their interfaces to allow for custom CLI and Server morphs to be created. 
 
