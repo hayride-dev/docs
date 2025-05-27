@@ -13,15 +13,12 @@ The CLI morph itself is a WebAssembly Component that can be represented through 
 
 ```wit
 world cli {
-    // import wasi:config/store@0.2.0-draft;
-    // import hayride:core/config@0.0.48;
-
-    include hayride:wasip2/imports@0.0.48;
-    include hayride:silo/imports@0.0.48;
-    include hayride:http/client@0.0.48;
-    include hayride:wac/imports@0.0.48;
+    include hayride:wasip2/imports@0.0.51;
+    include hayride:silo/imports@0.0.51;
+    include hayride:http/client@0.0.51;
+    include hayride:wac/imports@0.0.51;
     
-    include hayride:wasip2/exports@0.0.48;
+    include hayride:wasip2/exports@0.0.51;
 }
 ```
 

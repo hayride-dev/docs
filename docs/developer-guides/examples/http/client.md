@@ -41,10 +41,10 @@ Additionally we will be using the `hayride:http/client` module to provide the HT
 package hayride-examples:http@0.0.1;
 
 world client {
-    include hayride:wasip2/imports@0.0.47;
-    include hayride:wasip2/exports@0.0.47;
+    include hayride:wasip2/imports@0.0.51;
+    include hayride:wasip2/exports@0.0.51;
  
-    include hayride:http/client@0.0.47;
+    include hayride:http/client@0.0.51;
 }
 ```
 

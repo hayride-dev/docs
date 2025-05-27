@@ -17,22 +17,70 @@ The server morph itself is a WebAssembly Component that can be represented throu
 world server {
     import wasi:config/store@0.2.0-draft;
 
-    include hayride:wasip2/imports@0.0.48;
-    include hayride:silo/imports@0.0.48;
+    include hayride:wasip2/imports@0.0.51;
+    include hayride:silo/imports@0.0.51;
 
-    include hayride:http/client-server@0.0.48;
+    include hayride:http/client-server@0.0.51;
 }
 ```
-The server world is made up of the wasip2 imports, but also includes the `hayride:http/client-server@0.0.46` export, which is wrapper around the wasi-http incoming and outgoing HTTP Handlers. 
+The server world is made up of the wasip2 imports, but also includes the `hayride:http/client-server@0.0.51` export, which is wrapper around the wasi-http incoming and outgoing HTTP Handlers. 
 
 The HTTP server implemented is provided by the Hayride runtime. HTTP Request are passed to the server morph, which then routes them to the appropriate handlers.
 
-### Public Imports
-- `hayride:http/client-server@0.0.46`
-- `hayride:core/config@0.0.46`
-
 ### Private Imports
-- `hayride:silo/imports@0.0.46`
+
+Hayride has `private` or `reserved` imports that are not intended for `public` use. These imports are restricted to the Hayride platform and are used internally by the Server.
+
+They include:
+
+- `hayride:silo/imports@0.0.51`: Silo implements basic parallelism and concurrency primitives for the Hayride platform. It provides a way to run Morphs in parallel and manage their execution. This is not intended for public use and is reserved for the Hayride platform. More holistic Async support is being discussed by the WebAssembly community and may replace this in the future.
+
+### Public Exports
+
+The Server includes the following `public` exports from the Hayride platform:
+
+- `hayride:http/client-server@0.0.51`: A hayride specific world that exports the wasi http/incoming-handler as well as a custom config interface to allow server implementations to expose their own server configuration through a `get` function. See below for an example of what this wit definition looks like.
+
+```wit
+interface config {
+    record server {
+        address: string,
+        read-timeout: u32,
+        write-timeout: u32,
+        max-header-bytes: u32,
+    }
+
+    enum error-code {
+        invalid,
+        not-found,
+        unknown
+    }
+
+    resource error {
+        code: func() -> error-code;
+        data: func() -> string;
+    }
+
+    get: func() -> result<server, error>;
+}
+
+world client {
+    import wasi:http/types@0.2.0;
+    import wasi:http/outgoing-handler@0.2.0;
+}
+
+world server {
+    import wasi:http/types@0.2.0;
+    export wasi:http/incoming-handler@0.2.0;
+
+    export config;
+}
+
+world client-server {
+    include client; 
+    include server; 
+}
+```
 
 ## Server Routes 
 
