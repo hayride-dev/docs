@@ -69,7 +69,6 @@ const config = {
           srcDark: 'img/hayride-white-orange-logo-chick.png',
         },
         items: [
-          {href: 'https://blog.hayride.dev', label: 'Blog', position: 'right'},
           {
             href: 'https://github.com/hayride-dev/docs',
             label: 'GitHub',
@@ -96,15 +95,19 @@ const config = {
                 label: 'X',
                 href: 'https://x.com/HayrideDev',
               },
+               {
+                label: 'Slack',
+                href: 'https://join.slack.com/t/hayride-group/shared_invite/zt-33wvwkpk2-WXr_wyHNlhqTjkZQYb_dow',
+              },
+              {
+                label: 'LinkedIn',
+                href: 'https://www.linkedin.com/company/hayridedev'
+              },
             ],
           },
           {
             title: 'More',
             items: [
-              {
-                label: 'Blog',
-                to: '/blog',
-              },
               {
                 label: 'GitHub',
                 href: 'https://github.com/hayride-dev',
