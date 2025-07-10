@@ -75,9 +75,9 @@ In the `wit/world.wit` file, define the interface for your Morph. This interface
 package hayride:http-morphs@0.0.1;
 
 world http-client {
-    include hayride:wasip2/imports@0.0.44;
-    include hayride:wasip2/exports@0.0.44;
-    include hayride:http/client@0.0.44;
+    include hayride:wasip2/imports@0.0.59;
+    include hayride:wasip2/exports@0.0.59;
+    include hayride:http/client@0.0.59;
 }
 ```
 
@@ -116,6 +116,7 @@ world http-client {
 There are a number of ways to add dependencies to WIT, Hayride leverages wit-deps to manage dependencies. You can learn more about wit-deps [here](../tools/wit-deps.md).
 
 ### Step 3: Write the Morph Code
+
 Create a new file called `main.go` in the root directory of your project. This file will contain the main logic for your Morph. 
 
 ```sh
@@ -133,12 +134,12 @@ import (
 
 	"net/http"
 
-	"github.com/hayride-dev/bindings/go/imports/net/http/transport"
+	"github.com/hayride-dev/bindings/go/wasi/net/http/transport"
 )
 
 func main() {
 	client := &http.Client{
-		Transport: transport.NewWasiRoundTripper(),
+		Transport: transport.New(),
 	}
 
 	resp, err := client.Get("https://postman-echo.com/get?foo1=bar1&foo2=bar2")
@@ -162,9 +163,9 @@ func main() {
 }
 ```
 
-In this code, we create an HTTP client using the `transport.NewWasiRoundTripper()` function from the Hayride bindings. This allows us to make HTTP requests within the Wasm environment. We then perform a GET request to a public API and print the response. 
+In this code, we create an HTTP client using the `transport.New()` function from the Hayride bindings. This allows us to make HTTP requests within the Wasm environment. We then perform a GET request to a public API and print the response. 
 
-HTTP is an example of a capability that is not yet supported by the Go standard library in Wasm. However, the Hayride bindings provide a way to use HTTP in a Wasm environment that support WASI 0.2. Our hope is that similar 
+HTTP is an example of a capability that is not yet supported by the Go standard library in Wasm. However, the Hayride bindings provide a way to use HTTP in a Wasm environment that support WASI 0.2.
 
 ### Step 4: Compile the Morph
 
@@ -193,7 +194,7 @@ To run the Morph using Wasmtime, you can use the following command:
 
 The output should look like this:
 
-```sh
+```json
 GET request successful: OK
 {
   "args": {
@@ -213,6 +214,7 @@ GET request successful: OK
 ```
 
 ### Step 6: Run the Morph with Hayride
+
 To run the Morph using Hayride, you can use the following command:
 
 ```sh

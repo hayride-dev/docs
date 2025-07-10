@@ -8,5 +8,5 @@ Hayride specific bindings for Python are under development. Keep an eye on the [
 
 The Hayride bindings are only designed to aid in the development process, **they are not required**. 
 
-If you are interested in using Python without offical hayride bindings, please refer to the [Python language guide](https://component-model.bytecodealliance.org/language-support/python.html) for developing WebAssembly components.
+If you are interested in using Python without official hayride bindings, please refer to the [Python language guide](https://component-model.bytecodealliance.org/language-support/python.html) for developing WebAssembly components.
 :::

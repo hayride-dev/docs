@@ -17,13 +17,13 @@ The server morph itself is a WebAssembly Component that can be represented throu
 world server {
     import wasi:config/store@0.2.0-draft;
 
-    include hayride:wasip2/imports@0.0.51;
-    include hayride:silo/imports@0.0.51;
+    include hayride:wasip2/imports@0.0.59;
+    include hayride:silo/imports@0.0.59;
 
-    include hayride:http/client-server@0.0.51;
+    include hayride:http/client-server@0.0.59;
 }
 ```
-The server world is made up of the wasip2 imports, but also includes the `hayride:http/client-server@0.0.51` export, which is wrapper around the wasi-http incoming and outgoing HTTP Handlers. 
+The server world is made up of the wasip2 imports, but also includes the `hayride:http/client-server@0.0.59` export, which is wrapper around the wasi-http incoming and outgoing HTTP Handlers.
 
 The HTTP server implemented is provided by the Hayride runtime. HTTP Request are passed to the server morph, which then routes them to the appropriate handlers.
 
@@ -33,52 +33,37 @@ Hayride has `private` or `reserved` imports that are not intended for `public` u
 
 They include:
 
-- `hayride:silo/imports@0.0.51`: Silo implements basic parallelism and concurrency primitives for the Hayride platform. It provides a way to run Morphs in parallel and manage their execution. This is not intended for public use and is reserved for the Hayride platform. More holistic Async support is being discussed by the WebAssembly community and may replace this in the future.
+- `hayride:silo/imports@0.0.59`: Silo implements basic parallelism and concurrency primitives for the Hayride platform. It provides a way to run Morphs in parallel and manage their execution. This is not intended for public use and is reserved for the Hayride platform. More holistic Async support is being discussed by the WebAssembly community and may replace this in the future.
 
 ### Public Exports
 
 The Server includes the following `public` exports from the Hayride platform:
 
-- `hayride:http/client-server@0.0.51`: A hayride specific world that exports the wasi http/incoming-handler as well as a custom config interface to allow server implementations to expose their own server configuration through a `get` function. See below for an example of what this wit definition looks like.
+- `hayride:http/client-server@0.0.59`: A hayride specific world that exports the wasi http/incoming-handler as well as a custom config interface to allow server implementations to expose their own server configuration through a `get` function. See below for an example of what this wit definition looks like.
 
 ```wit
-interface config {
-    record server {
-        address: string,
-        read-timeout: u32,
-        write-timeout: u32,
-        max-header-bytes: u32,
-    }
-
+interface types {
     enum error-code {
         invalid,
         not-found,
         unknown
     }
 
+    record server-config {
+        address: string,
+        read-timeout: u32,
+        write-timeout: u32,
+        max-header-bytes: u32,
+    }
+}
+
+interface config {
+    use types.{server-config, error-code};
     resource error {
         code: func() -> error-code;
         data: func() -> string;
     }
-
-    get: func() -> result<server, error>;
-}
-
-world client {
-    import wasi:http/types@0.2.0;
-    import wasi:http/outgoing-handler@0.2.0;
-}
-
-world server {
-    import wasi:http/types@0.2.0;
-    export wasi:http/incoming-handler@0.2.0;
-
-    export config;
-}
-
-world client-server {
-    include client; 
-    include server; 
+    get: func() -> result<server-config, error>;
 }
 ```
 
@@ -87,19 +72,24 @@ world client-server {
 The server morph exposes the following routes:
 
 ```
+	healthPath   = "/health"
 	castPath     = "/v1/cast"
+	sessionsPath = "/v1/sessions"
 	statusPath   = "/v1/sessions/status"
-	killPath     = "/v1/sessions/kill"
+	stopPath     = "/v1/sessions/stop"
+	publishPath  = "/v1/registry/publish"
 ```
 
 The API objects are defined as WIT records. And can be found in the [Hayride Coven Repository](https://github.com/hayride-dev/core/blob/main/wit/deps/core/api.wit). 
 
 ### Cast
+
 The cast route is used to execute a function on a morph. The function is typically the entry point of the morph, and the request body contains the input parameters for the function. The response body contains the output of the function. The response body also contains a session ID, which can be used to track the status of the function execution.
 
 The cast route is used by the Hayride CLI to execute functions on morphs. The request body contains the input parameters for the function, and the response body contains the output of the function.
 
 #### WIT Definition
+
 ```
 record cast {
     name: string,
@@ -110,19 +100,20 @@ record cast {
 
 The cast record is used as the data object in the request body. 
 
-- **name field**, is the name of the morph, 
-- **function field**, is the name of the function to execute
+- **name** field, is the name of the morph, 
+- **function** field, is the name of the function to execute
 - **args** field, is a list of input parameters for the function. Represented as strings. More complex types are not supported yet.
 
 #### Example Request
+
 ```json
 {
   "data": {
     "cast": {
-      "name": "string",
-      "function": "",
+      "name": "example:echo-morph@0.0.1",
+      "function": "echo",
       "args": [
-        ""
+        "arg1"
       ]
     }
   }
@@ -130,6 +121,7 @@ The cast record is used as the data object in the request body.
 ```
 
 #### Example Response
+
 ```json
 {
   "data": {
@@ -143,13 +135,21 @@ The cast record is used as the data object in the request body.
 The session status route is used to check if a morph is running. The request body contains the session ID, and the response body contains the status of the morph. 
 
 #### WIT Definition
-```   
-record session-status {
-    active: bool,
+
+```
+variant response-data {
+    session-status(thread-status),
+}
+
+enum thread-status {
+    unknown,
+    processing,
+    exited,
+    killed
 }
 ```
 
-- **active field**, is a boolean value that indicates if the morph is running or not.
+- **session-status** will contain the current thread status for the session, either processing, exited, or killed.
 
 #### Example Request
 ```json
@@ -163,26 +163,34 @@ record session-status {
 ```json
 {
   "data": {
-    "session-status": {
-      "active": true
-    }
+    "session-status": "processing"
   }
 }
 ```
 
-### Kill Session
-The kill session route is used to stop a running morph. The request body contains the session ID, and the response body contains the status of the morph after it has been stopped.
+### Stop Session
+
+The stop session route is used to stop a running morph. The request body contains the session ID, and the response body contains the status of the morph after it has been stopped.
 
 #### WIT Definition
+
 ```
-record session-status {
-    active: bool,
+variant response-data {
+    session-status(thread-status),
+}
+
+enum thread-status {
+    unknown,
+    processing,
+    exited,
+    killed
 }
 ```
 
-- **active field**, is a boolean value that indicates if the morph is running or not.
+- **session-status** will contain the current thread status for the session, either processing, exited, or killed.
 
 #### Example Request
+
 ```json
 {
   "data": {
@@ -190,13 +198,13 @@ record session-status {
   }
 }
 ```
+
 #### Example Response
+
 ```json
 {
   "data": {
-    "session-status": {
-      "active": false
-    }
+    "session-status": "killed"
   }
 }
 ```

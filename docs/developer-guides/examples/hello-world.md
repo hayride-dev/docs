@@ -40,18 +40,18 @@ In the `wit/world.wit` file, define the interface for your Morph. This interface
 package hayride-examples:hello-world@0.0.1;
 
 world hello-world {
-    include hayride:wasip2/imports@0.0.51;
-    include hayride:wasip2/exports@0.0.51;
+    include hayride:wasip2/imports@0.0.59;
+    include hayride:wasip2/exports@0.0.59;
 }
 ```
 
-Since we simply be returning a string, we don't need to include any additional imports or exports. The `wasip2` imports and exports are sufficient for this example.
+Since we simply be printing a string, we don't need to include any additional imports or exports. The `wasip2` imports and exports are sufficient for this example.
 
-Our morph will be a `Command` component that returns a string. Which means, we will be exported the cli:run function from wasip2. 
+Our morph will be a `Command` component that prints a string. Which means, we will be exporting the cli:run function from wasip2. 
 
-The the above example, we are using the `hayride:wasip2/imports` and `hayride:wasip2/exports` modules to provide the necessary WASI functionality. These are shorthand references to the WASI imports and exports that are required for the Morph to function correctly.
+In the above example, we are using the `hayride:wasip2/imports` and `hayride:wasip2/exports` modules to provide the necessary WASI functionality. These are shorthand references to the WASI imports and exports that are required for the Morph to function correctly.
 
-To include these files we will use `wit-dep` to pull in the necessary dependencies. The `wit-dep` tool is a dependency manager for WIT files. 
+To include these files we will use `wit-deps` to pull in the necessary dependencies. The `wit-deps` tool is a dependency manager for WIT files.
 
 ## WIT Dependencies
 
@@ -60,15 +60,15 @@ In the wit directory, create a `deps.toml` file to manage the dependencies for y
 This file will specify the dependencies required for your Morph:
 
 ```toml
-wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.51/hayride_wasip2_v0.0.51.tar.gz"
+wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.59/hayride_wasip2_v0.0.59.tar.gz"
 ```
 
-Using `wit-dep`, we can pull in the dependencies for our WIT files. 
+Using `wit-deps`, we can pull in the dependencies for our WIT files. 
 
 From the root directory of your project, run the following command:
 
 ```bash
-wit-dep update
+wit-deps update
 ```
 
 This will download the dependencies specified in the `deps.toml` file and place them in the `wit/deps` directory.

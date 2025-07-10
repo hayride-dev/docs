@@ -17,6 +17,7 @@ See [Tools](../../tools.md) for additional information on these tools.
 :::
 
 ## Step 1: Create a new directory
+
 Create a new directory for your project and navigate into it:
 
 ```bash
@@ -24,7 +25,8 @@ mkdir http-client
 cd http-client
 ```
 ## Step 2: Create a WIT file
-First, create the necessary WIT files. In the root level of the project, create a directory called `wit` and create a file called `client.wit` inside it:
+
+First, create the necessary WIT files. In the root level of the project, create a directory called `wit` and create a file called `world.wit` inside it:
 
 ```bash
 mkdir wit
@@ -41,10 +43,10 @@ Additionally we will be using the `hayride:http/client` module to provide the HT
 package hayride-examples:http@0.0.1;
 
 world client {
-    include hayride:wasip2/imports@0.0.51;
-    include hayride:wasip2/exports@0.0.51;
+    include hayride:wasip2/imports@0.0.59;
+    include hayride:wasip2/exports@0.0.59;
  
-    include hayride:http/client@0.0.51;
+    include hayride:http/client@0.0.59;
 }
 ```
 
@@ -55,16 +57,16 @@ In the wit directory, create a `deps.toml` file to manage the dependencies for y
 This file will specify the dependencies required for your Morph:
 
 ```toml
-wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.47/hayride_wasip2_v0.0.47.tar.gz"
-hayride-http = "https://github.com/hayride-dev/coven/releases/download/v0.0.47/hayride_http_v0.0.47.tar.gz""
+wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.59/hayride_wasip2_v0.0.59.tar.gz"
+hayride-http = "https://github.com/hayride-dev/coven/releases/download/v0.0.59/hayride_http_v0.0.59.tar.gz""
 ```
 
-Using `wit-dep`, we can pull in the dependencies for our WIT files. 
+Using `wit-deps`, we can pull in the dependencies for our WIT files. 
 
 From the root directory of your project, run the following command:
 
 ```bash
-wit-dep update
+wit-deps update
 ```
 
 This will download the dependencies specified in the `deps.toml` file and place them in the `wit/deps` directory.
@@ -137,12 +139,12 @@ import (
 
 	"net/http"
 
-	"github.com/hayride-dev/bindings/go/imports/net/http/transport"
+	"github.com/hayride-dev/bindings/go/wasi/net/http/transport"
 )
 
 func main() {
 	client := &http.Client{
-		Transport: transport.NewWasiRoundTripper(),
+		Transport: transport.New(),
 	}
 
 	resp, err := client.Get("https://postman-echo.com/get?foo1=bar1&foo2=bar2")
@@ -166,12 +168,12 @@ func main() {
 }
 ```
 
-In this code, we create a new HTTP client using the `http.Client` struct and set the transport to `transport.NewWasiRoundTripper()`. This allows us to make HTTP requests using the WASI environment. The round tripper is provided by the `hayride-dev/bindings/go/imports/net/http/transport` package, which is part of the Hayride HTTP bindings. However, any HTTP client that has implemented the `wasi-http` interface can be used.
+In this code, we create a new HTTP client using the `http.Client` struct and set the transport to `transport.New()`. This allows us to make HTTP requests using the WASI environment. The transport is provided by the `github.com/hayride-dev/bindings/go/wasi/net/http/transport` package, which is part of the Hayride HTTP bindings. However, any HTTP client that has implemented the `wasi-http` interface can be used.
 
 In this example, we are making a GET request to `https://postman-echo.com/get?foo1=bar1&foo2=bar2` and printing the response body. You can modify the URL to test with different endpoints.
 
-
 ## Step 5: Build the Morph
+
 To build the Morph, run the following command:
 
 ```bash
@@ -185,7 +187,7 @@ This command will compile the Morph to a WebAssembly binary. The `--wit-package`
 To register the Morph with the Hayride platform, we can use the `hayride` CLI. First, initialize the Hayride environment:
 
 ```bash
-hayride register --morph client.wasm --package hayride-examples --version 0.0.1
+hayride register --bin client.wasm --package hayride-examples:client@0.0.1
 ```
 
 ## Step 7: Cast the Morph
@@ -193,7 +195,7 @@ hayride register --morph client.wasm --package hayride-examples --version 0.0.1
 To cast the Morph, use the `hayride` CLI:
 
 ```bash
-hayride cast --morph hayride-examples:http@0.0.1:client -it
+hayride cast --package hayride-examples:http@0.0.1:client -it
 ```
 
 This command will execute the Morph and print the output to the console. The `-it` flag indicates that we want to run the Morph in interactive mode.
