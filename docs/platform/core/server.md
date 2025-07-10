@@ -25,7 +25,7 @@ world server {
 ```
 The server world is made up of the wasip2 imports, but also includes the `hayride:http/client-server@0.0.59` export, which is wrapper around the wasi-http incoming and outgoing HTTP Handlers.
 
-The HTTP server implemented is provided by the Hayride runtime. HTTP Request are passed to the server morph, which then routes them to the appropriate handlers.
+The HTTP server implemented is provided by the Hayride runtime. HTTP requests are passed to the server morph, which then routes them to the appropriate handlers.
 
 ### Private Imports
 

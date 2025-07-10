@@ -194,7 +194,7 @@ To run the Morph using Wasmtime, you can use the following command:
 
 The output should look like this:
 
-```json
+```sh
 GET request successful: OK
 {
   "args": {

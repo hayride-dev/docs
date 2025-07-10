@@ -45,7 +45,7 @@ world hello-world {
 }
 ```
 
-Since we simply be printing a string, we don't need to include any additional imports or exports. The `wasip2` imports and exports are sufficient for this example.
+Since we are simply printing a string, we don't need to include any additional imports or exports. The `wasip2` imports and exports are sufficient for this example.
 
 Our morph will be a `Command` component that prints a string. Which means, we will be exporting the cli:run function from wasip2. 
 

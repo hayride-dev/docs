@@ -56,7 +56,7 @@ This file will specify the dependencies required for your Morph:
 
 ```toml
 wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.59/hayride_wasip2_v0.0.59.tar.gz"
-hayride-http = "https://github.com/hayride-dev/coven/releases/download/v0.0.59/hayride_http_v0.0.59.tar.gz""
+hayride-http = "https://github.com/hayride-dev/coven/releases/download/v0.0.59/hayride_http_v0.0.59.tar.gz"
 ```
 
 Using `wit-deps`, we can pull in the dependencies for our WIT files. 
