@@ -8,5 +8,5 @@ Hayride specific bindings for JS are under development. Keep an eye on the [hayr
 
 The Hayride bindings are only designed to aid in the development process, **they are not required**. 
 
-If you are interested in using JS without offical hayride bindings, please refer to the [JS language guide](https://component-model.bytecodealliance.org/language-support/javascript.html) for developing WebAssembly components.
+If you are interested in using JS without official hayride bindings, please refer to the [JS language guide](https://component-model.bytecodealliance.org/language-support/javascript.html) for developing WebAssembly components.
 :::

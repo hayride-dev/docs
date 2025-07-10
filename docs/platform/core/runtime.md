@@ -40,35 +40,34 @@ The Hayride runtime implements a collection of [WIT](https://github.com/WebAssem
 package hayride:runtime@0.0.1;
 
 world hayride-server {
-    include hayride:wasip2/imports@0.0.51;
-    include hayride:http/client-server@0.0.51;
+    include hayride:wasip2/imports@0.0.59;
+    include hayride:http/client-server@0.0.59;
 }
 
 world hayride-cli {
-    include hayride:wasip2/imports@0.0.51;
-    include hayride:wasip2/exports@0.0.51;
+    include hayride:wasip2/imports@0.0.59;
+    include hayride:wasip2/exports@0.0.59;
 }
 
 world hayride-ws {
-    include hayride:socket/exports@0.0.51;
+    include hayride:socket/exports@0.0.59;
 }
 
 world hayride-ai {
-    include hayride:ai/imports@0.0.51;
+    include hayride:ai/imports@0.0.59;
 }
 
 world hayride-api {
-    import hayride:core/ai-api@0.0.51;
+    import hayride:core/ai-api@0.0.59;
 }
 
 world hayride-silo {
-    include hayride:silo/imports@0.0.51;
+    include hayride:silo/imports@0.0.59;
 }
 
 world hayride-wac {
-    include hayride:wac/imports@0.0.51;
+    include hayride:wac/imports@0.0.59;
 }
-
 ```
 
 :::info

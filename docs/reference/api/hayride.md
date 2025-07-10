@@ -22,16 +22,18 @@ The **Hayride API** is currently in **alpha**. Breaking changes may occur in upc
 
 ### Configuration
 
-The server is part of the core Hayride configuration.
+The server is part of the core Hayride configuration. The config specifies the root server binary, components used to compose the full server, and the http port.
 
 Hayride installs with default values, which can be customized as needed:
 
 ```
 core:
-  server:
-    bin: "hayride-core:server-cfg@0.0.1"
-    http:
-      address: "http://localhost:8080"
+    server:
+        bin: "hayride-core:server@0.0.1"
+        plugs:
+            - hayride-core:cfg@0.0.1
+        http:
+            port: 8080
 ```
 
 :::tip
@@ -88,14 +90,16 @@ If successful, the server will respond a list of sessions which includes the pac
   "data": {
     "sessions": {
       "sessions": [
-        [
-          "hayride:ai-server@0.0.1",
-          "e30739ec-8a38-4d3c-8e0c-b07f3e3e1548"
-        ],
-        [
-          "hayride:cli-agent@0.0.1",
-          "e92d2baa-c0e9-43a2-9d47-ac59408693cd"
-        ]
+        {
+          "id": "3d534634-b7de-4fe9-bebc-f19a18341aff",
+          "pkg": "hayride-core:composed-ai-server@0.0.1",
+          "function": "",
+          "args": [
+            "hayride-core:composed-ai-server@0.0.1"
+          ],
+          "output": [],
+          "status": "processing"
+        },
       ]
     }
   }
@@ -126,9 +130,7 @@ If successful, the server will respond with the status of the session.
 ```JSON
 {
   "data": {
-    "session-status": {
-      "active": true
-    }
+    "session-status": "processing"
   }
 }
 ```
@@ -157,9 +159,7 @@ If successful, the server will respond with the updated session status.
 ```JSON
 {
   "data": {
-    "session-status": {
-      "active": false
-    }
+    "session-status": "killed"
   }
 }
 ```

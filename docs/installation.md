@@ -37,8 +37,8 @@ The directory structure will look like this:
 ```bash
 .hayride
 ├── ai
-│   └── models
-│       └── Meta-Llama-3.1-8B-Instruct-Q5_K_M.gguf
+│   └── hf_hub
+│       └── models--bartowski--Meta-Llama-3.1-8B-Instruct-GGUF
 ├── bin
 │   ├── LICENSE.txt
 │   └── hayride
@@ -49,13 +49,16 @@ The directory structure will look like this:
     └── morphs
         ├── hayride
         │   └── 0.0.1
+        │       ├── default-agent.wasm
+        │       ├── default-tools.wasm
         │       ├── inmemory.wasm
         │       └── llama31.wasm
         └── hayride-core
             └── 0.0.1
-                ├── ai-server-cfg.wasm
+                ├── ai-server.wasm
+                ├── cfg.wasm
                 ├── cli.wasm
-                └── server-cfg.wasm
+                └── server.wasm
 ```     
 
 :::warning
