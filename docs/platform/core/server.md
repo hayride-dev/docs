@@ -44,7 +44,7 @@ They include:
 ### Public Imports
 
 The Server includes the following `public` imports:
-- `wasi:config/store@0.2.0-draft`: The WASI config store which provides an interface to include a component the exports a config store, which is implemented the Hayride cfg morph to provide access to the Hayride config.
+- `wasi:config/store@0.2.0-draft`: The WASI config store which provides an interface to include a component that exports a config store, which is implemented the Hayride cfg morph to provide access to the Hayride config.
 
 ### Public Exports
 
