@@ -41,7 +41,10 @@ package hayride:runtime@0.0.1;
 
 world hayride-server {
     include hayride:wasip2/imports@0.0.59;
-    include hayride:http/client-server@0.0.59;
+    
+    // exports
+    export wasi:http/incoming-handler@0.2.0;
+    export hayride:http/config@0.0.59;
 }
 
 world hayride-cli {
@@ -50,23 +53,33 @@ world hayride-cli {
 }
 
 world hayride-ws {
-    include hayride:socket/exports@0.0.59;
+    export hayride:socket/websocket@0.0.59;
 }
 
 world hayride-ai {
-    include hayride:ai/imports@0.0.59;
+    include wasi:nn/ml@0.2.0-rc-2024-10-28;
+
+    import hayride:ai/tensor-stream@0.0.59;
+    import hayride:ai/inference-stream@0.0.59;
+    import hayride:ai/graph-stream@0.0.59;
+
+    import hayride:ai/agents@0.0.59;
+    import hayride:ai/model@0.0.59;
+    import hayride:ai/model-repository@0.0.59;
+    import hayride:ai/rag@0.0.59;
 }
 
 world hayride-api {
-    import hayride:core/ai-api@0.0.59;
+    import hayride:core/types@0.0.59;
 }
 
 world hayride-silo {
-    include hayride:silo/imports@0.0.59;
+    import hayride:silo/threads@0.0.59;
+    import hayride:silo/process@0.0.59;
 }
 
 world hayride-wac {
-    include hayride:wac/imports@0.0.59;
+    import hayride:wac/wac@0.0.59;
 }
 ```
 
