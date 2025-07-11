@@ -15,15 +15,21 @@ The server morph itself is a WebAssembly Component that can be represented throu
 
 ```wit
 world server {
+    include hayride:wasip2/imports@0.0.59;
+
+    // silo imports
+    import hayride:silo/threads@0.0.59;
+    import hayride:silo/process@0.0.59;
+
+    // wasi imports
     import wasi:config/store@0.2.0-draft;
 
-    include hayride:wasip2/imports@0.0.59;
-    include hayride:silo/imports@0.0.59;
-
-    include hayride:http/client-server@0.0.59;
+    // exports
+    export wasi:http/incoming-handler@0.2.0;
+    export hayride:http/config@0.0.59;
 }
 ```
-The server world is made up of the wasip2 imports, but also includes the `hayride:http/client-server@0.0.59` export, which is wrapper around the wasi-http incoming and outgoing HTTP Handlers.
+The server world is made up of the wasip2 imports and the `wasi:http/incoming-handler@0.2.0` export for http, but also includes the `hayride:http/config@0.0.59` export, which exposes a config `get` to enable the Hayride to get server configuration such as the address to serve.
 
 The HTTP server implemented is provided by the Hayride runtime. HTTP requests are passed to the server morph, which then routes them to the appropriate handlers.
 
@@ -33,13 +39,19 @@ Hayride has `private` or `reserved` imports that are not intended for `public` u
 
 They include:
 
-- `hayride:silo/imports@0.0.59`: Silo implements basic parallelism and concurrency primitives for the Hayride platform. It provides a way to run Morphs in parallel and manage their execution. This is not intended for public use and is reserved for the Hayride platform. More holistic Async support is being discussed by the WebAssembly community and may replace this in the future.
+- `hayride:silo/threads@0.0.59` and `hayride:silo/process@0.0.59`: Silo implements basic parallelism and concurrency primitives for the Hayride platform. It provides a way to run Morphs in parallel and manage their execution. This is not intended for public use and is reserved for the Hayride platform. More holistic Async support is being discussed by the WebAssembly community and may replace this in the future.
+
+### Public Imports
+
+The Server includes the following `public` imports:
+- `wasi:config/store@0.2.0-draft`: The WASI config store which provides an interface to include a component the exports a config store, which is implemented the Hayride cfg morph to provide access to the Hayride config.
 
 ### Public Exports
 
-The Server includes the following `public` exports from the Hayride platform:
+The Server includes the following `public` exports:
 
-- `hayride:http/client-server@0.0.59`: A hayride specific world that exports the wasi http/incoming-handler as well as a custom config interface to allow server implementations to expose their own server configuration through a `get` function. See below for an example of what this wit definition looks like.
+- `wasi:http/incoming-handler@0.2.0`: The WASI http incoming-handler which provides an entry point for handling http requests.
+- `hayride:http/config@0.0.59`: A hayride specific config interface to allow server implementations to expose their own server configuration through a `get` function. See below for an example of what this wit definition looks like.
 
 ```wit
 interface types {
