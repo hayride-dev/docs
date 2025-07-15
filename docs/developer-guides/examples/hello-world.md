@@ -40,8 +40,8 @@ In the `wit/world.wit` file, define the interface for your Morph. This interface
 package hayride-examples:hello-world@0.0.1;
 
 world hello-world {
-    include hayride:wasip2/imports@0.0.59;
-    include hayride:wasip2/exports@0.0.59;
+    include hayride:wasip2/imports@0.0.60;
+    include hayride:wasip2/exports@0.0.60;
 }
 ```
 
@@ -60,7 +60,7 @@ In the wit directory, create a `deps.toml` file to manage the dependencies for y
 This file will specify the dependencies required for your Morph:
 
 ```toml
-wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.59/hayride_wasip2_v0.0.59.tar.gz"
+wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.60/hayride_wasip2_v0.0.60.tar.gz"
 ```
 
 Using `wit-deps`, we can pull in the dependencies for our WIT files. 

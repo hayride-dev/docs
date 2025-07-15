@@ -42,9 +42,9 @@ Additionally we will be using the `hayride:http/server` module to specify that w
 package hayride-examples:http@0.0.1;
 
 world server {
-    include hayride:wasip2/imports@0.0.59;
+    include hayride:wasip2/imports@0.0.60;
  
-    include hayride:http/server@0.0.59;
+    include hayride:http/server@0.0.60;
 }
 ```
 
@@ -55,8 +55,9 @@ In the wit directory, create a `deps.toml` file to manage the dependencies for y
 This file will specify the dependencies required for your Morph:
 
 ```toml
-wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.59/hayride_wasip2_v0.0.59.tar.gz"
-hayride-http = "https://github.com/hayride-dev/coven/releases/download/v0.0.59/hayride_http_v0.0.59.tar.gz"
+http = "https://github.com/WebAssembly/wasi-http/archive/refs/tags/v0.2.0.tar.gz"
+wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.60/hayride_wasip2_v0.0.60.tar.gz"
+hayride-http = "https://github.com/hayride-dev/coven/releases/download/v0.0.60/hayride_http_v0.0.60.tar.gz"
 ```
 
 Using `wit-deps`, we can pull in the dependencies for our WIT files. 

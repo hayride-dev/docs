@@ -84,8 +84,8 @@ Using this WIT definition, we can create a WebAssembly component that exports th
 package hayride:agents@0.0.1;
 
 world default {
-    include hayride:wasip2/imports@0.0.59;
-    export hayride:ai/agents@0.0.59;
+    include hayride:wasip2/imports@0.0.60;
+    export hayride:ai/agents@0.0.60;
 }
 ```
 
@@ -98,8 +98,8 @@ In the `wit` directory, create a `deps.toml` file to manage the dependencies for
 This file will specify the dependencies required for your Morph:
 
 ```toml
-wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.59/hayride_wasip2_v0.0.59.tar.gz"
-ai = "https://github.com/hayride-dev/coven/releases/download/v0.0.59/hayride_ai_v0.0.59.tar.gz"
+wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.60/hayride_wasip2_v0.0.60.tar.gz"
+ai = "https://github.com/hayride-dev/coven/releases/download/v0.0.60/hayride_ai_v0.0.60.tar.gz"
 ```
 
 Using `wit-deps`, we can pull in the dependencies for our WIT files.

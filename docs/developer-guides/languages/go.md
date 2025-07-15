@@ -75,13 +75,13 @@ In the `wit/world.wit` file, define the interface for your Morph. This interface
 package hayride:http-morphs@0.0.1;
 
 world http-client {
-    include hayride:wasip2/imports@0.0.59;
-    include hayride:wasip2/exports@0.0.59;
-    include hayride:http/client@0.0.59;
+    include hayride:wasip2/imports@0.0.60;
+    include hayride:wasip2/exports@0.0.60;
+    import wasi:http/outgoing-handler@0.2.0;
 }
 ```
 
-In the above WIT file, we define a world called `http-client` that includes the necessary imports and exports for the Morph. Specifically, we include the `hayride:wasip2/imports` and `hayride:wasip2/exports` modules to provide the necessary WASI functionality, and the `hayride:http/client` module to provide HTTP client capabilities.
+In the above WIT file, we define a world called `http-client` that includes the necessary imports and exports for the Morph. Specifically, we include the `hayride:wasip2/imports` and `hayride:wasip2/exports` modules to provide the necessary WASI functionality, and the `wasi:http/outgoing-handler` module to provide HTTP client capabilities.
 
 When compiling with TinyGo, we will include this WIT file to ensure the Wasm binary is generated with the correct imports and exports. 
 
