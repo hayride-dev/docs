@@ -163,3 +163,35 @@ If successful, the server will respond with the updated session status.
   }
 }
 ```
+
+> **GET /v1/version**
+
+Submits a request to get the current configured version of Hayride.
+
+**Response**
+
+If successful, the server will respond with a version string.
+
+```JSON
+{
+  "data": {
+    "version": "v0.0.2-alpha"
+  }
+}
+```
+
+> **GET /v1/version/latest**
+
+Submits a request to get the latest released version of Hayride.
+
+**Response**
+
+If successful, the server will respond with a version string.
+
+```JSON
+{
+  "data": {
+    "version": "v0.0.2-alpha"
+  }
+}
+```
