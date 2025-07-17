@@ -1,4 +1,8 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 title: Model Formatting
 ---
+
+:::warning 
+This page is a work in progress. It will be updated with more information soon. In the meantime, you can review the source code for hayride on [GitHub](https://github.com/hayride-dev).
+::: 
