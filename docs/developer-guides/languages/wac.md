@@ -11,4 +11,4 @@ WAC is a superset of the WIT language, which allows for more complex composition
 
 The Hayride platform uses WAC to define how components are composed together and how they interact with each other.
 
-
+More detail about WAC can be found in the [WAC Repository](https://github.com/bytecodealliance/wac).

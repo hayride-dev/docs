@@ -5,16 +5,20 @@ title: Agents
 
 Hayride defines a set of WebAssembly Interfaces Types (WIT) that allow you to build componenets that export the `agent` interface.
 
+An Agent is a component that interacts with an AI model, has the ability to use tools, and stores context of any interactions. 
+
 This interface allows you to build agents that can be used in a variety of contexts, such as command line tools, or server-side applications.
 
 In this example, we will create a simple agent loop. 
 
-This example heavily uses generated bindings from `wit-bindgen-go`, which is a tool that generates Go code from WIT definitions. Unfortunately, can be a little difficult to follow, however once you start to understand using the bindings, you will find that it is fairly straightforward to fill in the implementation details.
+This example heavily uses generated bindings from `wit-bindgen-go`, which is a tool that generates Go code from WIT definitions. 
+
+Unfortunately, the generated code can be a little difficult to follow, however once you start filling in the implementation details, you will find that it is fairly straightforward.
 
 In the future, we will be extending our bindings to provide more functionality and make it easier to work with the `agent` interface.
 
 :::tip
-Hayride leverages the WebAssembly Component Model, which allows you to implement your own `agent` interfaces. However, Hayride ships with a default implementation of the `agent` interface that you can use to get started quickly. 
+Hayride leverages the WebAssembly Component Model, which allows you to implement your own `agent` component. However, Hayride ships with a default implementation of the `agent` interface that you can use to get started quickly. 
 
 This example is specifically to help guide in the process of creating your own agent implementations.
 :::
@@ -60,7 +64,7 @@ interface agents {
 }
 ```
 
-The agent resource is the main entry point for components implementing the `agent` interface. 
+The agent resource is defined by components implementing the `agent` interface. 
 
 From the constructor, you can see it takes the following parameters:
 - `name`: A string representing the name of the agent.
@@ -136,11 +140,10 @@ go mod init agent-example
 touch main.go
 ```
 
-
 ### Step 4.1 Exports 
 In the main.go file, implement the Morph:
 
-We will start by setting the exported functions for the `agent` interface.
+We will start by setting the exported functions for the `agent` resource.
 
 ```go
 package main
@@ -157,7 +160,7 @@ func init() {
 }
 ```
 
-Note, the `init` function is setting the exported functions for the `agent` interface to the functions we will implement next (i.e `constructor`, `invoke`, `invokeStream`, and `destructor`).
+Note, the `init` function is setting the exported functions for the `agent` resource to the functions we will implement next (i.e `constructor`, `invoke`, `invokeStream`, and `destructor`).
 
 ### Step 4.2 Implement the Constructor
 
@@ -597,7 +600,7 @@ func main() {}
 To build the Morph, we will use TinyGo to compile the Go code into a WebAssembly component.
 
 ```bash
-tinygo build -target wasip2 --wit-package ./wit/ --wit-world default default.go
+tinygo build -target wasip2 --wit-package ./wit/ --wit-world default -o default.wasm main.go
 ```
 
 This command will compile the Morph to a WebAssembly binary. The `--wit-package` flag specifies the directory containing the WIT files, and the `--wit-world` flag specifies the name of the WIT world to use.
@@ -610,6 +613,11 @@ hayride register --bin default.wasm --package hayride-ai:default@0.0.1
 
 # Next steps    
 
-You can now use the Morph in your Hayride applications. You can create agents that can process messages, call tools, and interact with the context.
+You can now use the Morph in your Hayride applications. 
 
 The morph can be composed with another Morph that imports the `hayride:ai/agents` interface, allowing you to build more complex agents that can interact with other components in the Hayride ecosystem.
+
+For more examples on extending the `agent` interface, checkout the following examples: 
+- Context: [context](./context.md)
+- Tools: [tools](./tools.md)
+- Model: [model formatting](./model-formatting.md)
