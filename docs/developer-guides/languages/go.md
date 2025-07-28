@@ -75,8 +75,8 @@ In the `wit/world.wit` file, define the interface for your Morph. This interface
 package hayride:http-morphs@0.0.1;
 
 world http-client {
-    include hayride:wasip2/imports@0.0.60;
-    include hayride:wasip2/exports@0.0.60;
+    include hayride:wasip2/imports@0.0.61;
+    include hayride:wasip2/exports@0.0.61;
     import wasi:http/outgoing-handler@0.2.0;
 }
 ```

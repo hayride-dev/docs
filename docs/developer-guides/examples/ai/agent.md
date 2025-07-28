@@ -3,19 +3,13 @@ sidebar_position: 1
 title: Agents
 ---
 
-Hayride defines a set of WebAssembly Interfaces Types (WIT) that allow you to build componenets that export the `agent` interface.
+Hayride defines a set of WebAssembly Interfaces Types (WIT) that allow you to build components that export the `agent` interface.
 
 An Agent is a component that interacts with an AI model, has the ability to use tools, and stores context of any interactions. 
 
 This interface allows you to build agents that can be used in a variety of contexts, such as command line tools, or server-side applications.
 
-In this example, we will create a simple agent loop. 
-
-This example heavily uses generated bindings from `wit-bindgen-go`, which is a tool that generates Go code from WIT definitions. 
-
-Unfortunately, the generated code can be a little difficult to follow, however once you start filling in the implementation details, you will find that it is fairly straightforward.
-
-In the future, we will be extending our bindings to provide more functionality and make it easier to work with the `agent` interface.
+In this example, we will create a simple agent.
 
 :::tip
 Hayride leverages the WebAssembly Component Model, which allows you to implement your own `agent` component. However, Hayride ships with a default implementation of the `agent` interface that you can use to get started quickly. 
@@ -33,19 +27,24 @@ This example is specifically to help guide in the process of creating your own a
 Below is the WIT definition for the `agent` interface:
 
 ```wit
-package hayride:ai@0.0.60;
+package hayride:ai@0.0.61;
+
 
 interface agents {
     use types.{message};
     use context.{context};
     use model.{format};
-    use tools.{tools};
+    use hayride:mcp/tools@0.0.61.{tools};
+    use hayride:mcp/types@0.0.61.{tool, call-tool-params, call-tool-result};
     use graph-stream.{graph-stream};
     use inference-stream.{graph-execution-context-stream};
     use wasi:io/streams@0.2.0.{output-stream};
 
     enum error-code {
-        invoke-error,
+        capabilities-error,
+        context-error,
+        compute-error,
+        execute-error,
         unknown
     }
 
@@ -57,10 +56,14 @@ interface agents {
     }
 
     resource agent {
-        constructor(name: string, instruction: string, tools: tools, context: context, format: format, graph: graph-execution-context-stream);
-        invoke: func(input: message) -> result<list<message>, error>;
-        invoke-stream: func(message: message, writer: output-stream) -> result<_,error>;
-    }            
+        constructor(name: string, instruction: string, format: format, graph: graph-execution-context-stream, tools: option<tools>, context: option<context>);
+        name: func() -> string;
+        instruction: func() -> string;
+        capabilities: func() -> result<list<tool>, error>;
+        context: func() -> result<list<message>, error>;
+        compute: func(message: message) -> result<message, error>;
+        execute: func(params: call-tool-params) -> result<call-tool-result, error>;
+    }
 }
 ```
 
@@ -69,17 +72,17 @@ The agent resource is defined by components implementing the `agent` interface.
 From the constructor, you can see it takes the following parameters:
 - `name`: A string representing the name of the agent.
 - `instruction`: A string that provides instructions for the agent.
-- `tools`: A set of tools that the agent can use.
-- `context`: A context that provides additional information for the agent.
 - `format`: A format that specifies how messages should be formatted.
 - `graph`: A graph execution context stream that allows the agent to execute graphs.
+- `option<tools>`: An optional set of tools that the agent can use.
+- `option<context>`: An optional context that provides additional information for the agent.
 
 The `use` keywords indicate that the agent interface depends on other interfaces, such as `types`, `context`, `model`, `tools`, `graph-stream`, and `inference-stream`. These dependencies provide the necessary types and functionality for the agent to operate effectively. 
 
 For now, we can treat them as normal WebAssembly imports and leave the implementation details for later. 
 
 :::info
-Using the WebAssembly Component Model, we can build other WebAssembly components that satisfy various interfaces, such as `tools`, meaning that the imports do not need to be strictly implemented by the host environement, or even the same language.
+Using the WebAssembly Component Model, we can build other WebAssembly components that satisfy various interfaces, such as `tools`, meaning that the imports do not need to be strictly implemented by the host environment, or even the same language.
 :::
 
 Using this WIT definition, we can create a WebAssembly component that exports the `agent` interface.
@@ -88,8 +91,8 @@ Using this WIT definition, we can create a WebAssembly component that exports th
 package hayride:agents@0.0.1;
 
 world default {
-    include hayride:wasip2/imports@0.0.60;
-    export hayride:ai/agents@0.0.60;
+    include hayride:wasip2/imports@0.0.61;
+    export hayride:ai/agents@0.0.61;
 }
 ```
 
@@ -102,8 +105,9 @@ In the `wit` directory, create a `deps.toml` file to manage the dependencies for
 This file will specify the dependencies required for your Morph:
 
 ```toml
-wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.60/hayride_wasip2_v0.0.60.tar.gz"
-ai = "https://github.com/hayride-dev/coven/releases/download/v0.0.60/hayride_ai_v0.0.60.tar.gz"
+wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_wasip2_v0.0.61.tar.gz"
+ai = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_ai_v0.0.61.tar.gz"
+mcp = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_mcp_v0.0.61.tar.gz"
 ```
 
 Using `wit-deps`, we can pull in the dependencies for our WIT files.
@@ -119,19 +123,19 @@ root/wit/world.wit
 root/wit/deps.toml
 ```
 
-## Step 3: Build the WebAssembly Component
+## Step 3: Import Bindings
 
-To build the WebAssembly component, we will use the `wit-bindgen-go` tool to generate the necessary code from the WIT definition.
+Generally, to build the WebAssembly component, you would need to generate bindings that provide language specific code to interact with the WIT defined objects.
+In Go you can do this with the `wit-bindgen-go` tool, however, Hayride has provided a repo that has pregenerated the necessary objects with helpful wrappers.
+So all you need to do is add it as a go dependency:
 
 ```bash
-wit-bindgen-go generate --world hayride:agents/default --out ./internal/gen ./wit
+go get github.com/hayride-dev/bindings
 ```
-
-This command will generate the Go code for the `agent` interface in the `internal/gen` directory.
 
 ## Step 4: Implement the Agent
 
-Now that we have the WIT definition and the generated code, we can implement the agent in Go.
+Now that we have the WIT definition and the bindings dependency, we can implement the agent in Go.
 
 Next, create a file called `main.go` in the root directory of your project. This file will contain the implementation of your Morph:
 
@@ -141,221 +145,240 @@ touch main.go
 ```
 
 ### Step 4.1 Exports 
+
 In the main.go file, implement the Morph:
 
-We will start by setting the exported functions for the `agent` resource.
+We will start by setting the exported functions for the `agent` resource by calling the bindings `export.Agent` function with a constructor.
+
 
 ```go
 package main
 
 import (
-	"github.com/hayride-dev/morphs/components/ai/agents/internal/gen/hayride/ai/agents"
+	"github.com/hayride-dev/bindings/go/hayride/ai/agents/export"
 )
 
 func init() {
-	agents.Exports.Agent.Constructor = constructor
-	agents.Exports.Agent.Invoke = invoke
-	agents.Exports.Agent.InvokeStream = invokeStream
-	agents.Exports.Agent.Destructor = destructor
+	export.Agent(constructor)
 }
 ```
 
-Note, the `init` function is setting the exported functions for the `agent` resource to the functions we will implement next (i.e `constructor`, `invoke`, `invokeStream`, and `destructor`).
+Note, the `export.Agent` function takes a constructor, which is a function type defined in bindings: 
+`type Constructor func(name string, instruction string, format models.Format, graph graph.GraphExecutionContextStream, tools tools.Tools, context ctx.Context) (agents.Agent, error)`
+
+This constructor will be called whenever the user of our Agent calls the agent constructor function. So we will return a new object that satisfies the 
+`agents.Agent` interface:
+
+```go
+type Agent interface {
+	Name() string
+	Instruction() string
+	Capabilities() ([]types.Tool, error)
+	Context() ([]types.Message, error)
+	Compute(message types.Message) (*types.Message, error)
+	Execute(params types.CallToolParams) (*types.CallToolResult, error)
+}
+```
 
 ### Step 4.2 Implement the Constructor
 
 Next, we will implement the `constructor` function. This function will be called when the agent is created.
 
 ```go
+var _ agents.Agent = (*defaultAgent)(nil)
 
-const maxturn = 10
+type defaultAgent struct {
+	name        string
+	instruction string
+	format      models.Format
+	graph       graph.GraphExecutionContextStream
 
-var resourceTable = resources{
-	agents: make(map[cm.Rep]*agent),
+	// Tools and Context are optional
+	tools   tools.Tools
+	context ctx.Context
 }
 
-func init() {
-	agents.Exports.Agent.Constructor = constructor
-	agents.Exports.Agent.Invoke = invoke
-	agents.Exports.Agent.InvokeStream = invokeStream
-	agents.Exports.Agent.Destructor = destructor
-}
-
-type resources struct {
-	agents map[cm.Rep]*agent
-}
-
-type agent struct {
-	name    string
-	tools   agents.Tools
-	context agents.Context
-	format  agents.Format
-	graph   agents.GraphExecutionContextStream
-}
-
-func constructor(name string, instruction string, tools_ agents.Tools, context_ agents.Context, format agents.Format, graph agents.GraphExecutionContextStream) agents.Agent {
-	agent := &agent{
-		name:    name,
-		tools:   tools_,
-		context: context_,
-		format:  format,
-		graph:   graph,
+func constructor(name string, instruction string, format models.Format, graph graph.GraphExecutionContextStream, tools tools.Tools, context ctx.Context) (agents.Agent, error) {
+	if format == nil {
+		return nil, fmt.Errorf("format is required for agent")
 	}
 
-	content := []types.Content{}
-	content = append(content, types.ContentText(types.TextContent{
-		Text: instruction,
-	}))
-
-	result := tools_.Capabilities()
-	if result.IsErr() {
-		return cm.ResourceNone
-	}
-	for _, t := range result.OK().Slice() {
-		content = append(content, types.ContentToolSchema(cm.Reinterpret[types.ToolSchema](t)))
+	if graph == nil {
+		return nil, fmt.Errorf("graph is required for agent")
 	}
 
-	msg := types.Message{Role: 1, Content: cm.ToList(content)}
+	agent := &defaultAgent{
+		name:        name,
+		instruction: instruction,
+		tools:       tools,
+		context:     context,
+		format:      format,
+		graph:       graph,
+	}
 
-	agent.context.Push(cm.Reinterpret[agents.Message](msg))
+	// If context is set, push the initial instruction message
+	if context != nil {
+		content := []types.MessageContent{}
+		content = append(content, types.NewMessageContent(types.Text(instruction)))
 
-	key := cm.Rep(uintptr(unsafe.Pointer(agent)))
-	v := agents.AgentResourceNew(key)
-	resourceTable.agents[key] = agent
-	return v
+		// If tools are set, list them and append to content
+		if tools != nil {
+			result, err := tools.List("")
+			if err != nil {
+				return nil, err
+			}
+
+			if result.Tools.Len() > 0 {
+				// Append the list of tools to the content
+				content = append(content, types.NewMessageContent(result.Tools))
+			}
+		}
+
+		// Push message to the context
+		msg := types.Message{Role: types.RoleSystem, Content: cm.ToList(content)}
+		agent.context.Push(cm.Reinterpret[types.Message](msg))
+	}
+
+	return agent, nil
 }
 ```
 
-This `constructor` function initializes a new agent with the provided parameters and pushes an initial message to the agent's context. It also stores the agent in a resource table for later use.
+This `constructor` function initializes a new agent with the provided parameters and, if context is set, pushes an initial message to the agent's context.
 
 The `constructor` function is called when a new agent is created, and it sets up the agent's initial state. Any component that imports the `agent` interface can call this function to create a new agent instance.
 
-### Step 4.3 Implement the Destructor
+### Step 4.3 Implement the Interface Functions
 
-Next we will implement the `destructor` function, which will be called when the agent is no longer needed.
+Next, we will implement the `agents.Agent` functions, which may be called on an individual agent instance.
 
 ```go
-func destructor(self cm.Rep) {
-	delete(resourceTable.agents, self)
+func (a *defaultAgent) Name() string {
+	return a.name
 }
 
-```
+func (a *defaultAgent) Instruction() string {
+	return a.instruction
+}
 
-This `destructor` function cleans up the agent's resources when it is no longer needed and removes the agent from the resource table.
-
-### Step 4.4 Implement the Invoke Function
-
-Next, we will implement the `invoke` function, which will be called to process a message with the agent.
-
-```go
-func invoke(self cm.Rep, input agents.Message) cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error] {
-	agent, ok := resourceTable.agents[self]
-	if !ok {
-		wasiErr := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-		return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](wasiErr)
+func (a *defaultAgent) Capabilities() ([]types.Tool, error) {
+	if a.tools == nil {
+		return nil, fmt.Errorf("tools are not set for agent %s", a.name)
 	}
 
-	result := agent.context.Push(input)
-	if result.IsErr() {
-		err := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-		return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](err)
+	result, err := a.tools.List("")
+	if err != nil {
+		return nil, err
 	}
 
-	var messages []agents.Message
+	return result.Tools.Slice(), nil
+}
 
-	for i := 0; i <= maxturn; i++ {
-		result := agent.context.Messages()
-		if result.IsErr() {
-			err := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-			return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](err)
-		}
-		msgs := result.OK().Slice()
+func (a *defaultAgent) Context() ([]types.Message, error) {
+	if a.context == nil {
+		return nil, fmt.Errorf("context is not set for agent %s", a.name)
+	}
 
-		encodedResult := agent.format.Encode(cm.ToList(msgs))
-		if encodedResult.IsErr() {
-			err := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-			return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](err)
-		}
+	msgs, err := a.context.Messages()
+	if err != nil {
+		return nil, err
+	}
 
-		d := tensor.TensorDimensions(cm.ToList([]uint32{1}))
-		td := tensor.TensorData(cm.ToList(encodedResult.OK().Slice()))
-		t := tensor.NewTensor(d, tensor.TensorTypeU8, td)
-		inputs := []inferencestream.NamedTensor{
-			{
-				F0: "user",
-				F1: t,
-			},
+	return msgs, nil
+}
+
+func (a *defaultAgent) Compute(message types.Message) (*types.Message, error) {
+	var msgs []types.Message
+	// Push message to context
+	if a.context != nil {
+		if err := a.context.Push(message); err != nil {
+			return nil, fmt.Errorf("failed to push message to context: %w", err)
 		}
-		computeResult := agent.graph.Compute(cm.ToList(inputs))
-		if computeResult.IsErr() {
-			err := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-			return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](err)
+		// Get all context messages
+		m, err := a.context.Messages()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get context messages: %w", err)
 		}
 
-		stream := computeResult.OK().F1
-		ts := tensorStream(stream)
-		text := make([]byte, 0)
-		for {
-		
-			p := make([]byte, 100)
-			len, err := ts.Read(p)
-			if len == 0 || err == io.EOF {
-				break
-			} else if err != nil {
-				err := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-				return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](err)
-			}
-			text = append(text, p[:len]...)
-		}
+		msgs = m
+	} else {
+		msgs = []types.Message{message}
+	}
 
-		decodeResult := agent.format.Decode(cm.ToList(text))
-		if decodeResult.IsErr() {
-			err := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-			return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](err)
-		}
+	// Format encode the messages
+	data, err := a.format.Encode(msgs...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to encode context messages: %w", err)
+	}
 
-		msg := decodeResult.OK()
-		pushResponse := agent.context.Push(*msg)
-		if pushResponse.IsErr() {
-			err := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-			return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](err)
-		}
+	// Call Graph Compute
+	d := graph.TensorDimensions(cm.ToList([]uint32{1}))
+	td := graph.TensorData(cm.ToList(data))
+	t := graph.NewTensor(d, graph.TensorTypeU8, td)
+	inputs := []graph.NamedTensor{
+		{
+			F0: "user",
+			F1: t,
+		},
+	}
+	namedTensorStream, err := a.graph.Compute(inputs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to compute graph: %w", err)
+	}
 
-		// Add the message to the messages list
-		messages = append(messages, *msg)
-
-		calledTool := false
-		switch msg.Role {
-		case types.RoleAssistant:
-			for _, c := range msg.Content.Slice() {
-				switch c.String() {
-				case "tool-input":
-					toolresult := agent.tools.Call(*c.ToolInput())
-					if toolresult.IsErr() {
-						err := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-						return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](err)
-					}
-					calledTool = true
-
-					toolCall := agents.Message{Role: types.RoleTool, Content: cm.ToList([]types.Content{types.ContentToolOutput(*toolresult.OK())})}
-
-					messages = append(messages, toolCall)
-
-					agent.context.Push(toolCall)
-				default:
-					continue
-				}
-			}
-		default:
-			return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError)))
-		}
-		if !calledTool {
+	stream := namedTensorStream.F1
+	ts := graph.TensorStream(stream)
+	// read the output from the stream
+	text := make([]byte, 0)
+	for {
+		// Read up to 100 bytes from the output
+		// to get any tokens that have been generated and push to socket
+		p := make([]byte, 100)
+		len, err := ts.Read(p)
+		if len == 0 || err == io.EOF {
 			break
+		} else if err != nil {
+			return nil, fmt.Errorf("failed to read from tensor stream: %w", err)
+		}
+		text = append(text, p[:len]...)
+
+		// TODO:: Optionally write RAW output to a writer
+		// to get the raw output back faster, but would require an updated interface for agent compute
+	}
+
+	// Decode Message
+	msg, err := a.format.Decode(text)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode message: %w", err)
+	}
+
+	// Push to Context if set
+	if a.context != nil {
+		if err := a.context.Push(*msg); err != nil {
+			return nil, fmt.Errorf("failed to push message to context: %w", err)
 		}
 	}
-	return cm.OK[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](cm.ToList(messages))
+
+	// Return the final message
+	return msg, nil
+}
+
+func (a *defaultAgent) Execute(params types.CallToolParams) (*types.CallToolResult, error) {
+	if a.tools == nil {
+		return nil, fmt.Errorf("tools are not set for agent %s", a.name)
+	}
+
+	result, err := a.tools.Call(params)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 ```
+
+The `Name`, `Instruction`, `Capabilities`, and `Context` functions are mostly just used to get information from the agent.
+
+The `Compute` function is one that does most of the work.
 
 While this implementation is a bit complex, it essentially does the following:
 - adds the input message to the agent's context
@@ -363,24 +386,12 @@ While this implementation is a bit complex, it essentially does the following:
 - encodes the messages using the agent's format
 - computes the response using the agent's graph
 - decodes the response using the agent's format
-- looks for tool calls in the response
-- if a tool call is found, it calls the tool and adds the tool output to the context
-- continues processing until no more tool calls are found or the maximum number of turns is reached
 - pushes the response back to the agent's context
-- returns the list of messages
+- returns the final message
 
-### Step 4.5 Implement the InvokeStream Function
+Generally this Compute function would be called by an agent runner, which may additionally decide to use a tool through the Agent's `Execute` function.
 
-Finally, we will implement the `invokeStream` function, which will be called to process a message with the agent in a streaming manner.
-
-Since the `invokeStream` is similar to the `invoke` function, we will keep it as an empty placeholder for now. 
-
-```go
-func invokeStream(self cm.Rep, input agents.Message, writer wasi_io.OutputStream) cm.Result[cm.List[agents.Message], agents.Error] {
-    // Placeholder for streaming implementation
-    return cm.Err[cm.Result[cm.List[agents.Message], agents.Error]](agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError)))
-}
-```
+Execute just takes the parameters of a tool call and uses the `Call` function of it's tools and returns the result or any error.
 
 ### Full Implementation
 
@@ -390,206 +401,201 @@ Here is the full implementation of the `main.go` file:
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
-	"unsafe"
 
-	"github.com/hayride-dev/morphs/components/ai/agents/internal/gen/hayride/ai/agents"
-	inferencestream "github.com/hayride-dev/morphs/components/ai/agents/internal/gen/hayride/ai/inference-stream"
-	"github.com/hayride-dev/morphs/components/ai/agents/internal/gen/hayride/ai/types"
-	"github.com/hayride-dev/morphs/components/ai/agents/internal/gen/wasi/nn/tensor"
+	"github.com/hayride-dev/bindings/go/hayride/ai/agents"
+	"github.com/hayride-dev/bindings/go/hayride/ai/agents/export"
+	"github.com/hayride-dev/bindings/go/hayride/ai/ctx"
+	"github.com/hayride-dev/bindings/go/hayride/ai/graph"
+	"github.com/hayride-dev/bindings/go/hayride/ai/models"
+	"github.com/hayride-dev/bindings/go/hayride/mcp/tools"
+	"github.com/hayride-dev/bindings/go/hayride/types"
 	"go.bytecodealliance.org/cm"
 )
 
-const maxturn = 10
+var _ agents.Agent = (*defaultAgent)(nil)
 
-var resourceTable = resources{
-	agents: make(map[cm.Rep]*agent),
+type defaultAgent struct {
+	name        string
+	instruction string
+	format      models.Format
+	graph       graph.GraphExecutionContextStream
+
+	// Tools and Context are optional
+	tools   tools.Tools
+	context ctx.Context
 }
 
 func init() {
-	agents.Exports.Agent.Constructor = constructor
-	agents.Exports.Agent.Invoke = invoke
-	agents.Exports.Agent.InvokeStream = invokeStream
-	agents.Exports.Agent.Destructor = destructor
+	export.Agent(constructor)
 }
 
-type resources struct {
-	agents map[cm.Rep]*agent
-}
-
-type tensorStream cm.Resource
-
-func (t tensorStream) Read(p []byte) (int, error) {
-	ts := cm.Reinterpret[inferencestream.TensorStream](t)
-	ts.Subscribe().Block()
-	data := ts.Read(uint64(len(p)))
-	if data.IsErr() {
-		if data.Err().Closed() {
-			return 0, nil
-		}
-		return 0, fmt.Errorf("%s", data.Err().String())
-	}
-	n := copy(p, data.OK().Slice())
-	p = p[:n]
-	return len(p), nil
-}
-
-type agent struct {
-	name    string
-	tools   agents.Tools
-	context agents.Context
-	format  agents.Format
-	graph   agents.GraphExecutionContextStream
-}
-
-func constructor(name string, instruction string, tools_ agents.Tools, context_ agents.Context, format agents.Format, graph agents.GraphExecutionContextStream) agents.Agent {
-	agent := &agent{
-		name:    name,
-		tools:   tools_,
-		context: context_,
-		format:  format,
-		graph:   graph,
+func constructor(name string, instruction string, format models.Format, graph graph.GraphExecutionContextStream, tools tools.Tools, context ctx.Context) (agents.Agent, error) {
+	if format == nil {
+		return nil, fmt.Errorf("format is required for agent")
 	}
 
-	content := []types.Content{}
-	content = append(content, types.ContentText(types.TextContent{
-		Text: instruction,
-	}))
-
-	result := tools_.Capabilities()
-	if result.IsErr() {
-		return cm.ResourceNone
-	}
-	for _, t := range result.OK().Slice() {
-		content = append(content, types.ContentToolSchema(cm.Reinterpret[types.ToolSchema](t)))
+	if graph == nil {
+		return nil, fmt.Errorf("graph is required for agent")
 	}
 
-	msg := types.Message{Role: 1, Content: cm.ToList(content)}
-
-	agent.context.Push(cm.Reinterpret[agents.Message](msg))
-
-	key := cm.Rep(uintptr(unsafe.Pointer(agent)))
-	v := agents.AgentResourceNew(key)
-	resourceTable.agents[key] = agent
-	return v
-}
-
-func invoke(self cm.Rep, input agents.Message) cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error] {
-	agent, ok := resourceTable.agents[self]
-	if !ok {
-		wasiErr := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-		return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](wasiErr)
+	agent := &defaultAgent{
+		name:        name,
+		instruction: instruction,
+		tools:       tools,
+		context:     context,
+		format:      format,
+		graph:       graph,
 	}
 
-	result := agent.context.Push(input)
-	if result.IsErr() {
-		err := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-		return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](err)
-	}
+	// If context is set, push the initial instruction message
+	if context != nil {
+		content := []types.MessageContent{}
+		content = append(content, types.NewMessageContent(types.Text(instruction)))
 
-	var messages []agents.Message
-
-	for i := 0; i <= maxturn; i++ {
-		result := agent.context.Messages()
-		if result.IsErr() {
-			err := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-			return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](err)
-		}
-		msgs := result.OK().Slice()
-
-		encodedResult := agent.format.Encode(cm.ToList(msgs))
-		if encodedResult.IsErr() {
-			err := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-			return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](err)
-		}
-
-		d := tensor.TensorDimensions(cm.ToList([]uint32{1}))
-		td := tensor.TensorData(cm.ToList(encodedResult.OK().Slice()))
-		t := tensor.NewTensor(d, tensor.TensorTypeU8, td)
-		inputs := []inferencestream.NamedTensor{
-			{
-				F0: "user",
-				F1: t,
-			},
-		}
-		computeResult := agent.graph.Compute(cm.ToList(inputs))
-		if computeResult.IsErr() {
-			err := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-			return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](err)
-		}
-
-		stream := computeResult.OK().F1
-		ts := tensorStream(stream)
-		text := make([]byte, 0)
-		for {
-		
-			p := make([]byte, 100)
-			len, err := ts.Read(p)
-			if len == 0 || err == io.EOF {
-				break
-			} else if err != nil {
-				err := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-				return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](err)
+		// If tools are set, list them and append to content
+		if tools != nil {
+			result, err := tools.List("")
+			if err != nil {
+				return nil, err
 			}
-			text = append(text, p[:len]...)
-		}
 
-		decodeResult := agent.format.Decode(cm.ToList(text))
-		if decodeResult.IsErr() {
-			err := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-			return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](err)
-		}
-
-		msg := decodeResult.OK()
-		pushResponse := agent.context.Push(*msg)
-		if pushResponse.IsErr() {
-			err := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-			return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](err)
-		}
-
-		messages = append(messages, *msg)
-
-		calledTool := false
-		switch msg.Role {
-		case types.RoleAssistant:
-			for _, c := range msg.Content.Slice() {
-				switch c.String() {
-				case "tool-input":
-					toolresult := agent.tools.Call(*c.ToolInput())
-					if toolresult.IsErr() {
-						err := agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError))
-						return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](err)
-					}
-					calledTool = true
-
-					toolCall := agents.Message{Role: types.RoleTool, Content: cm.ToList([]types.Content{types.ContentToolOutput(*toolresult.OK())})}
-
-					messages = append(messages, toolCall)
-
-					agent.context.Push(toolCall)
-				default:
-					continue
-				}
+			if result.Tools.Len() > 0 {
+				// Append the list of tools to the content
+				content = append(content, types.NewMessageContent(result.Tools))
 			}
-		default:
-			return cm.Err[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError)))
 		}
-		if !calledTool {
+
+		// Push message to the context
+		msg := types.Message{Role: types.RoleSystem, Content: cm.ToList(content)}
+		agent.context.Push(cm.Reinterpret[types.Message](msg))
+	}
+
+	return agent, nil
+}
+
+func (a *defaultAgent) Name() string {
+	return a.name
+}
+
+func (a *defaultAgent) Instruction() string {
+	return a.instruction
+}
+
+func (a *defaultAgent) Capabilities() ([]types.Tool, error) {
+	if a.tools == nil {
+		return nil, fmt.Errorf("tools are not set for agent %s", a.name)
+	}
+
+	result, err := a.tools.List("")
+	if err != nil {
+		return nil, err
+	}
+
+	return result.Tools.Slice(), nil
+}
+
+func (a *defaultAgent) Context() ([]types.Message, error) {
+	if a.context == nil {
+		return nil, fmt.Errorf("context is not set for agent %s", a.name)
+	}
+
+	msgs, err := a.context.Messages()
+	if err != nil {
+		return nil, err
+	}
+
+	return msgs, nil
+}
+
+func (a *defaultAgent) Compute(message types.Message) (*types.Message, error) {
+	var msgs []types.Message
+	// Push message to context
+	if a.context != nil {
+		if err := a.context.Push(message); err != nil {
+			return nil, fmt.Errorf("failed to push message to context: %w", err)
+		}
+		// Get all context messages
+		m, err := a.context.Messages()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get context messages: %w", err)
+		}
+
+		msgs = m
+	} else {
+		msgs = []types.Message{message}
+	}
+
+	// Format encode the messages
+	data, err := a.format.Encode(msgs...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to encode context messages: %w", err)
+	}
+
+	// Call Graph Compute
+	d := graph.TensorDimensions(cm.ToList([]uint32{1}))
+	td := graph.TensorData(cm.ToList(data))
+	t := graph.NewTensor(d, graph.TensorTypeU8, td)
+	inputs := []graph.NamedTensor{
+		{
+			F0: "user",
+			F1: t,
+		},
+	}
+	namedTensorStream, err := a.graph.Compute(inputs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to compute graph: %w", err)
+	}
+
+	stream := namedTensorStream.F1
+	ts := graph.TensorStream(stream)
+	// read the output from the stream
+	text := make([]byte, 0)
+	for {
+		// Read up to 100 bytes from the output
+		// to get any tokens that have been generated and push to socket
+		p := make([]byte, 100)
+		len, err := ts.Read(p)
+		if len == 0 || err == io.EOF {
 			break
+		} else if err != nil {
+			return nil, fmt.Errorf("failed to read from tensor stream: %w", err)
+		}
+		text = append(text, p[:len]...)
+
+		// TODO:: Optionally write RAW output to a writer
+		// to get the raw output back faster, but would require an updated interface for agent compute
+	}
+
+	// Decode Message
+	msg, err := a.format.Decode(text)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode message: %w", err)
+	}
+
+	// Push to Context if set
+	if a.context != nil {
+		if err := a.context.Push(*msg); err != nil {
+			return nil, fmt.Errorf("failed to push message to context: %w", err)
 		}
 	}
-	return cm.OK[cm.Result[cm.List[agents.Message], cm.List[agents.Message], agents.Error]](cm.ToList(messages))
+
+	// Return the final message
+	return msg, nil
 }
 
-func invokeStream(self cm.Rep, message agents.Message, writer agents.OutputStream) cm.Result[agents.Error, struct{}, agents.Error] {
-        // Placeholder for streaming implementation
-    return cm.Err[cm.Result[cm.List[agents.Message], agents.Error]](agents.ErrorResourceNew(cm.Rep(agents.ErrorCodeInvokeError)))
-}
+func (a *defaultAgent) Execute(params types.CallToolParams) (*types.CallToolResult, error) {
+	if a.tools == nil {
+		return nil, fmt.Errorf("tools are not set for agent %s", a.name)
+	}
 
-func destructor(self cm.Rep) {
-	delete(resourceTable.agents, self)
+	result, err := a.tools.Call(params)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func main() {}
