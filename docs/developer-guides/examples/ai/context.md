@@ -5,7 +5,7 @@ title: Context
 
 Hayride defines a set of WebAssembly Interfaces Types (WIT) that allow you to build components that export the `context` interface.
 
-A component that exports the `context` interface defines how messages that are processed by and agent are store/retrieved. Typically, this is used to store the history of messages that have been processed by the agent, but it can also be used to store other information that is relevant to the agent's processing.
+A component that exports the `context` interface defines how messages that are processed by an agent are stored and retrieved. Typically, this is used to store the history of messages that have been processed by the agent, but it can also be used to store other information that is relevant to the agent's processing.
 
 In this example we will create a simple context that stores messages in memory.
 
@@ -50,7 +50,7 @@ interface context {
         push: func(msg: message) -> result<_, error>;
         messages: func() -> result<list<message>, error>;
     }
-} 
+}
 ```
 
 The `context` resource is defined by components that implement the `context` interface. 
@@ -87,6 +87,7 @@ In the `wit` directory, create a `deps.toml` file with the following content:
 ```toml
 wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_wasip2_v0.0.61.tar.gz"
 ai = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_ai_v0.0.61.tar.gz"
+mcp = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_mcp_v0.0.61.tar.gz"
 ```
 
 Using `wit-deps`, we can pull in the dependencies for our WIT files.
@@ -114,7 +115,7 @@ go get github.com/hayride-dev/bindings
 
 ## Step 4: Implement the Context
 
-Now that we have the WIT definition and the bindings dependency, we can implement the agent in Go.
+Now that we have the WIT definition and the bindings dependency, we can implement the context in Go.
 
 Next, create a file called `main.go` in the root directory of your project. This file will contain the implementation of your Morph:
 
