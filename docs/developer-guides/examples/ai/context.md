@@ -3,9 +3,9 @@ sidebar_position: 2
 title: Context
 ---
 
-Hayride defines a set of WebAssembly Interfaces Types (WIT) that allow you to build componenets that export the `context` interface.
+Hayride defines a set of WebAssembly Interfaces Types (WIT) that allow you to build components that export the `context` interface.
 
-A component that exports the `context` inferface defines how messages that are processed by and agent are store/retrieved. Typically, this is used to store the history of messages that have been processed by the agent, but it can also be used to store other information that is relevant to the agent's processing.
+A component that exports the `context` interface defines how messages that are processed by an agent are stored and retrieved. Typically, this is used to store the history of messages that have been processed by the agent, but it can also be used to store other information that is relevant to the agent's processing.
 
 In this example we will create a simple context that stores messages in memory.
 
@@ -25,7 +25,7 @@ This example is specifically to help guide in the process of creating your own c
 Below is the WIT definition for the `context` interface. 
 
 ```wit
-package hayride:ai@0.0.60;
+package hayride:ai@0.0.61;
 
 interface context {
     use types.{message};
@@ -50,7 +50,7 @@ interface context {
         push: func(msg: message) -> result<_, error>;
         messages: func() -> result<list<message>, error>;
     }
-} 
+}
 ```
 
 The `context` resource is defined by components that implement the `context` interface. 
@@ -71,8 +71,8 @@ Using the `context` interface, you can define a component that exports the conte
 package hayride:contexts@0.0.1;
 
 world in-memory {
-    include hayride:wasip2/imports@0.0.60;
-    export hayride:ai/context@0.0.60;
+    include hayride:wasip2/imports@0.0.61;
+    export hayride:ai/context@0.0.61;
 }
 ```
 
@@ -85,8 +85,9 @@ Since the world imports wasip2 and the context interface, we need to create a `d
 In the `wit` directory, create a `deps.toml` file with the following content:
 
 ```toml
-wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.60/hayride_wasip2_v0.0.60.tar.gz"
-ai = "https://github.com/hayride-dev/coven/releases/download/v0.0.60/hayride_ai_v0.0.60.tar.gz"
+wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_wasip2_v0.0.61.tar.gz"
+ai = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_ai_v0.0.61.tar.gz"
+mcp = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_mcp_v0.0.61.tar.gz"
 ```
 
 Using `wit-deps`, we can pull in the dependencies for our WIT files.
@@ -102,19 +103,19 @@ root/wit/world.wit
 root/wit/deps.toml
 ```
 
-## Step 3: Build the WebAssembly Component
+## Step 3: Import Bindings
 
-To build the WebAssembly component, we will use the `wit-bindgen-go` tool to generate the necessary code from the WIT definition.
+Generally, to build the WebAssembly component, you would need to generate bindings that provide language specific code to interact with the WIT defined objects.
+In Go you can do this with the `wit-bindgen-go` tool, however, Hayride has provided a repo that has pregenerated the necessary objects with helpful wrappers.
+So all you need to do is add it as a go dependency:
 
 ```bash
-wit-bindgen-go generate --world hayride:contexts/in-memory --out ./internal/gen ./wit
+go get github.com/hayride-dev/bindings
 ```
-
-This command will generate the Go code for the `context` interface in the `internal/gen` directory.
 
 ## Step 4: Implement the Context
 
-Now that we have the WIT definition and the generated code, we can implement the agent in Go.
+Now that we have the WIT definition and the bindings dependency, we can implement the context in Go.
 
 Next, create a file called `main.go` in the root directory of your project. This file will contain the implementation of your Morph:
 
@@ -124,216 +125,112 @@ touch main.go
 ```
 
 ### Step 4.1 Exports 
+
 In the main.go file, implement the Morph:
 
-We will start by setting the exported functions for the `context` resource.
+We will start by setting the exported functions for the `context` resource by calling the bindings `export.Context` function with a constructor.
 
 
 ```go
 package main
 
 import (
-	"unsafe"
-
-	"github.com/hayride-dev/morphs/components/ai/contexts/internal/gen/hayride/ai/context"
-	"github.com/hayride-dev/morphs/components/ai/contexts/internal/gen/hayride/ai/types"
-	"go.bytecodealliance.org/cm"
+	"github.com/hayride-dev/bindings/go/hayride/ai/ctx"
+	"github.com/hayride-dev/bindings/go/hayride/ai/ctx/export"
+	"github.com/hayride-dev/bindings/go/hayride/types"
 )
 
 func init() {
-	context.Exports.Context.Constructor = constructor
-	context.Exports.Context.Push = push
-	context.Exports.Context.Messages = messages
-	context.Exports.Context.Destructor = destructor
+	export.Context(constructor)
 }
 ```
 
-Note, the `init` function is setting the exported functions for the `context` resource to the functions we will implement next (i.e `constructor`, `push`, `messages`, and `destructor`).
+Note, the `export.Context` function takes a constructor, which is a function type defined in bindings: `type Constructor func() (ctx.Context, error)`
+
+This constructor will be called whenever the user of our Context calls the context constructor function. So we will return a new object that satisfies the 
+`ctx.Constructor` interface:
+
+```go
+type Context interface {
+	Push(messages ...types.Message) error
+	Messages() ([]types.Message, error)
+}
+```
 
 ### Step 4.2 Implement the Constructor
 
-The constructor is called when the context is created. It initializes the context and returns a pointer to the context resource.
+The constructor is called when the context is created. It initializes the context and returns a struct that satisfies the `ctx.Context` interface.
 
 ```go
-package main
-
-import (
-	"unsafe"
-
-	"github.com/hayride-dev/morphs/components/ai/contexts/internal/gen/hayride/ai/context"
-	"github.com/hayride-dev/morphs/components/ai/contexts/internal/gen/hayride/ai/types"
-	"go.bytecodealliance.org/cm"
-)
-
-type resources struct {
-	ctx map[cm.Rep]*inMemoryContext
-}
+var _ ctx.Context = (*inMemoryContext)(nil)
 
 type inMemoryContext struct {
 	context []types.Message
 }
 
-func (c *inMemoryContext) push(msg context.Message) error {
-	c.context = append(c.context, msg)
+func constructor() (ctx.Context, error) {
+	return &inMemoryContext{
+		context: make([]types.Message, 0),
+	}, nil
+}
+```
+
+The `constructor` function creates a new instance of the `inMemoryContext` struct, which will hold the messages in memory.
+
+### Step 4.3 Implement the Push and Messages Methods
+
+We can see above that our `inMemoryContext` struct needs to satisfy the `ctx.Context` interface which has a `Push` method that adds messages to the context and a `Messages` method that retrieves all messages stored in the context.
+
+These are straightforward to implement for our in-memory example.
+
+```go
+func (c *inMemoryContext) Push(msg ...types.Message) error {
+	c.context = append(c.context, msg...)
 	return nil
 }
 
-func (c *inMemoryContext) messages() []context.Message {
-	return c.context
-}
-
-var resourceTable = resources{
-	ctx: make(map[cm.Rep]*inMemoryContext),
-}
-
-func init() {
-	context.Exports.Context.Constructor = constructor
-	context.Exports.Context.Push = push
-	context.Exports.Context.Messages = messages
-	context.Exports.Context.Destructor = destructor
-}
-
-func constructor() context.Context {
-	ctx := &inMemoryContext{
-		context: make([]types.Message, 0),
-	}
-
-	key := cm.Rep(uintptr(unsafe.Pointer(ctx)))
-	v := context.ContextResourceNew(key)
-	resourceTable.ctx[key] = ctx
-	return v
+func (c *inMemoryContext) Messages() ([]types.Message, error) {
+	return c.context, nil
 }
 ```
-
-The `constructor` function creates a new instance of the `inMemoryContext` struct, which will hold the messages in memory. We store the context in a resourceTable and returnt he resource handle to the caller.
-
-### Step 4.3 Implement the Destructor
-
-The destructor is called when the context is no longer needed. It cleans up the resources associated with the context.
-
-```go
-func destructor(self cm.Rep) {
-	delete(resourceTable.ctx, self)
-}
-```
-
-This `destructor` function cleans up the context resource when it is no longer needed and removes the agent from the resource table.
-
-
-### Step 4.4 Implement the Push and Messages Methods
-
-We can see above that our `inMemoryContext` struct has a `push` method that adds a message to the context and a `messages` method that retrieves all messages stored in the context.
-
-We can access these through our resource table using the `cm.Rep` key.
-
-```go
-func push(self cm.Rep, msg context.Message) cm.Result[context.Error, struct{}, context.Error] {
-	ctx, ok := resourceTable.ctx[self]
-	if !ok {
-		wasiErr := context.ErrorResourceNew(cm.Rep(context.ErrorCodePushError))
-		return cm.Err[cm.Result[context.Error, struct{}, context.Error]](wasiErr)
-	}
-
-	if err := ctx.push(msg); err != nil {
-		wasiErr := context.ErrorResourceNew(cm.Rep(context.ErrorCodePushError))
-		return cm.Err[cm.Result[context.Error, struct{}, context.Error]](wasiErr)
-	}
-	return cm.Result[context.Error, struct{}, context.Error]{}
-}
-
-func messages(self cm.Rep) (result cm.Result[cm.List[context.Message], cm.List[context.Message], context.Error]) {
-	ctx, ok := resourceTable.ctx[self]
-	if !ok {
-		wasiErr := context.ErrorResourceNew(cm.Rep(context.ErrorCodeMessageNotFound))
-		return cm.Err[cm.Result[cm.List[context.Message], cm.List[context.Message], context.Error]](wasiErr)
-	}
-
-	return cm.OK[cm.Result[cm.List[context.Message], cm.List[context.Message], context.Error]](cm.ToList(ctx.messages()))
-}
-```
-
-These functions handle the logic of access the context resource and performing the necessary operations.
 
 ## Full Implementation
 
 Here is the full implementation of the `main.go` file:
 
 ```go
+
 package main
 
 import (
-	"unsafe"
-
-	"github.com/hayride-dev/morphs/components/ai/contexts/internal/gen/hayride/ai/context"
-	"github.com/hayride-dev/morphs/components/ai/contexts/internal/gen/hayride/ai/types"
-	"go.bytecodealliance.org/cm"
+	"github.com/hayride-dev/bindings/go/hayride/ai/ctx"
+	"github.com/hayride-dev/bindings/go/hayride/ai/ctx/export"
+	"github.com/hayride-dev/bindings/go/hayride/types"
 )
 
-type resources struct {
-	ctx map[cm.Rep]*inMemoryContext
-}
+var _ ctx.Context = (*inMemoryContext)(nil)
 
 type inMemoryContext struct {
 	context []types.Message
 }
 
-func (c *inMemoryContext) push(msg context.Message) error {
-	c.context = append(c.context, msg)
+func (c *inMemoryContext) Push(msg ...types.Message) error {
+	c.context = append(c.context, msg...)
 	return nil
 }
 
-func (c *inMemoryContext) messages() []context.Message {
-	return c.context
+func (c *inMemoryContext) Messages() ([]types.Message, error) {
+	return c.context, nil
 }
 
-var resourceTable = resources{
-	ctx: make(map[cm.Rep]*inMemoryContext),
+func constructor() (ctx.Context, error) {
+	return &inMemoryContext{
+		context: make([]types.Message, 0),
+	}, nil
 }
 
 func init() {
-	context.Exports.Context.Constructor = constructor
-	context.Exports.Context.Push = push
-	context.Exports.Context.Messages = messages
-	context.Exports.Context.Destructor = destructor
-}
-
-func constructor() context.Context {
-	ctx := &inMemoryContext{
-		context: make([]types.Message, 0),
-	}
-
-	key := cm.Rep(uintptr(unsafe.Pointer(ctx)))
-	v := context.ContextResourceNew(key)
-	resourceTable.ctx[key] = ctx
-	return v
-}
-
-func push(self cm.Rep, msg context.Message) cm.Result[context.Error, struct{}, context.Error] {
-	ctx, ok := resourceTable.ctx[self]
-	if !ok {
-		wasiErr := context.ErrorResourceNew(cm.Rep(context.ErrorCodePushError))
-		return cm.Err[cm.Result[context.Error, struct{}, context.Error]](wasiErr)
-	}
-
-	if err := ctx.push(msg); err != nil {
-		wasiErr := context.ErrorResourceNew(cm.Rep(context.ErrorCodePushError))
-		return cm.Err[cm.Result[context.Error, struct{}, context.Error]](wasiErr)
-	}
-	return cm.Result[context.Error, struct{}, context.Error]{}
-}
-
-func messages(self cm.Rep) (result cm.Result[cm.List[context.Message], cm.List[context.Message], context.Error]) {
-	ctx, ok := resourceTable.ctx[self]
-	if !ok {
-		wasiErr := context.ErrorResourceNew(cm.Rep(context.ErrorCodeMessageNotFound))
-		return cm.Err[cm.Result[cm.List[context.Message], cm.List[context.Message], context.Error]](wasiErr)
-	}
-
-	return cm.OK[cm.Result[cm.List[context.Message], cm.List[context.Message], context.Error]](cm.ToList(ctx.messages()))
-}
-
-func destructor(self cm.Rep) {
-	delete(resourceTable.ctx, self)
+	export.Context(constructor)
 }
 
 func main() {}

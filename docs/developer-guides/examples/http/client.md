@@ -37,16 +37,16 @@ In the `wit/world.wit` file, define a world that will include the necessary impo
 
 In this case, we will be using the `hayride:wasip2/imports` and `hayride:wasip2/exports` modules to provide the necessary WASI functionality. 
 
-Additionally we will be using the `hayride:http/client` module to provide the HTTP client functionality. 
+Additionally we will be using the `wasi:http/outgoing-handler@0.2.0` module to provide the HTTP client functionality. 
 
 ```wit
 package hayride-examples:http@0.0.1;
 
 world client {
-    include hayride:wasip2/imports@0.0.60;
-    include hayride:wasip2/exports@0.0.60;
+    include hayride:wasip2/imports@0.0.61;
+    include hayride:wasip2/exports@0.0.61;
  
-    include hayride:http/client@0.0.60;
+    import wasi:http/outgoing-handler@0.2.0;
 }
 ```
 
@@ -58,8 +58,7 @@ This file will specify the dependencies required for your Morph:
 
 ```toml
 http = "https://github.com/WebAssembly/wasi-http/archive/refs/tags/v0.2.0.tar.gz"
-wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.60/hayride_wasip2_v0.0.60.tar.gz"
-hayride-http = "https://github.com/hayride-dev/coven/releases/download/v0.0.60/hayride_http_v0.0.60.tar.gz"
+wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_wasip2_v0.0.61.tar.gz"
 ```
 
 Using `wit-deps`, we can pull in the dependencies for our WIT files. 
@@ -91,8 +90,6 @@ wit/deps
 ├── filesystem
 │   ├── preopens.wit
 │   ├── types.wit
-│   └── world.wit
-├── hayride-http
 │   └── world.wit
 ├── http
 │   ├── handler.wit
@@ -196,7 +193,7 @@ hayride register --bin client.wasm --package hayride-examples:client@0.0.1
 To cast the Morph, use the `hayride` CLI:
 
 ```bash
-hayride cast --package hayride-examples:http@0.0.1:client -it
+hayride cast --package hayride-examples:client@0.0.1 -it
 ```
 
 This command will execute the Morph and print the output to the console. The `-it` flag indicates that we want to run the Morph in interactive mode.

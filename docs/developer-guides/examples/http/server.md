@@ -36,15 +36,16 @@ In the `wit/world.wit` file, define a world that will include the necessary impo
 
 In this case, we will be using the `hayride:wasip2/imports` module to provide the necessary WASI functionality. 
 
-Additionally we will be using the `hayride:http/server` module to specify that we are exporting an http server.
+Additionally we will be exporting `wasi:http/incoming-handler@0.2.0` and `hayride:http/config@0.0.61` to create a server component that can run on Hayride.
 
 ```wit
 package hayride-examples:http@0.0.1;
 
 world server {
-    include hayride:wasip2/imports@0.0.60;
+    include hayride:wasip2/imports@0.0.61;
  
-    include hayride:http/server@0.0.60;
+    export wasi:http/incoming-handler@0.2.0;
+    export hayride:http/config@0.0.61;
 }
 ```
 
@@ -56,8 +57,8 @@ This file will specify the dependencies required for your Morph:
 
 ```toml
 http = "https://github.com/WebAssembly/wasi-http/archive/refs/tags/v0.2.0.tar.gz"
-wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.60/hayride_wasip2_v0.0.60.tar.gz"
-hayride-http = "https://github.com/hayride-dev/coven/releases/download/v0.0.60/hayride_http_v0.0.60.tar.gz"
+wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_wasip2_v0.0.61.tar.gz"
+hayride-http = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_http_v0.0.61.tar.gz"
 ```
 
 Using `wit-deps`, we can pull in the dependencies for our WIT files. 
@@ -90,7 +91,8 @@ The directory structure should look like this:
 │   ├── types.wit
 │   └── world.wit
 ├── hayride-http
-│   └── world.wit
+│   ├── config.wit
+│   └── types.wit
 ├── http
 │   ├── handler.wit
 │   ├── proxy.wit
@@ -135,7 +137,8 @@ package main
 import (
 	"net/http"
 
-	"github.com/hayride-dev/bindings/go/hayride/exports/net/http/server"
+	"github.com/hayride-dev/bindings/go/hayride/types"
+	"github.com/hayride-dev/bindings/go/hayride/x/net/http/server/export"
 )
 
 func init() {
@@ -146,7 +149,7 @@ func init() {
 		w.Write([]byte("Hello, World!"))
 	})
 
-	server.Export(mux, server.Config{Address: "localhost:9000"})
+	export.ServerConfig(mux, types.ServerConfig{Address: "localhost:9000"})
 }
 
 func main() {}
@@ -154,7 +157,7 @@ func main() {}
 
 This is a simple Go program that creates a new HTTP server and registers a handler for the `/hello` endpoint. When accessed, it responds with "Hello, World!".
 
-The `server.Export` function is a Hayride binding that allows the HTTP server to be exported as a WebAssembly component. This is equivalent to http.ListenAndServe in the standard library, but it is specifically designed to work with Hayride's WebAssembly environment.
+The `export.ServerConfig` function is a Hayride binding that allows the HTTP server to be exported as a WebAssembly component. This is equivalent to http.ListenAndServe in the standard library, but it is specifically designed to work with Hayride's WebAssembly environment.
 
 ## Step 5: Build the Morph
 
