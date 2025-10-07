@@ -26,7 +26,7 @@ This example is specifically to help guide in the process of creating your own t
 Below is the WIT definition for the `tools` interface. 
 
 ```wit
-package hayride:mcp@0.0.61;
+package hayride:mcp@0.0.65;
 
 interface tools {
     use types.{tool, content, call-tool-params, call-tool-result, list-tools-result};
@@ -66,8 +66,8 @@ Using the `tools` interface, you can define a component that exports the tools i
 package hayride:contexts@0.0.1;
 
 world in-memory {
-    include hayride:wasip2/imports@0.0.61;
-    export hayride:mcp/tools@0.0.61;
+    include hayride:wasip2/imports@0.0.65;
+    export hayride:mcp/tools@0.0.65;
 }
 ```
 
@@ -80,9 +80,9 @@ Since the world imports wasip2 and the context interface, we need to create a `d
 In the `wit` directory, create a `deps.toml` file with the following content:
 
 ```toml
-wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_wasip2_v0.0.61.tar.gz"
-ai = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_ai_v0.0.61.tar.gz"
-mcp = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_mcp_v0.0.61.tar.gz"
+wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.65/hayride_wasip2_v0.0.65.tar.gz"
+ai = "https://github.com/hayride-dev/coven/releases/download/v0.0.65/hayride_ai_v0.0.65.tar.gz"
+mcp = "https://github.com/hayride-dev/coven/releases/download/v0.0.65/hayride_mcp_v0.0.65.tar.gz"
 ```
 
 Using `wit-deps`, we can pull in the dependencies for our WIT files.

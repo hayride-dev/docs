@@ -27,15 +27,15 @@ This example is specifically to help guide in the process of creating your own a
 Below is the WIT definition for the `agent` interface:
 
 ```wit
-package hayride:ai@0.0.61;
+package hayride:ai@0.0.65;
 
 
 interface agents {
     use types.{message};
     use context.{context};
     use model.{format};
-    use hayride:mcp/tools@0.0.61.{tools};
-    use hayride:mcp/types@0.0.61.{tool, call-tool-params, call-tool-result};
+    use hayride:mcp/tools@0.0.65.{tools};
+    use hayride:mcp/types@0.0.65.{tool, call-tool-params, call-tool-result};
     use graph-stream.{graph-stream};
     use inference-stream.{graph-execution-context-stream};
     use wasi:io/streams@0.2.0.{output-stream};
@@ -91,8 +91,8 @@ Using this WIT definition, we can create a WebAssembly component that exports th
 package hayride:agents@0.0.1;
 
 world default {
-    include hayride:wasip2/imports@0.0.61;
-    export hayride:ai/agents@0.0.61;
+    include hayride:wasip2/imports@0.0.65;
+    export hayride:ai/agents@0.0.65;
 }
 ```
 
@@ -105,9 +105,9 @@ In the `wit` directory, create a `deps.toml` file to manage the dependencies for
 This file will specify the dependencies required for your Morph:
 
 ```toml
-wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_wasip2_v0.0.61.tar.gz"
-ai = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_ai_v0.0.61.tar.gz"
-mcp = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_mcp_v0.0.61.tar.gz"
+wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.65/hayride_wasip2_v0.0.65.tar.gz"
+ai = "https://github.com/hayride-dev/coven/releases/download/v0.0.65/hayride_ai_v0.0.65.tar.gz"
+mcp = "https://github.com/hayride-dev/coven/releases/download/v0.0.65/hayride_mcp_v0.0.65.tar.gz"
 ```
 
 Using `wit-deps`, we can pull in the dependencies for our WIT files.
