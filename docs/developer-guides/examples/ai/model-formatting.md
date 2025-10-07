@@ -25,7 +25,7 @@ This example is specifically to help guide in the process of creating your own m
 Below is the WIT definition for the `model` interface. 
 
 ```wit
-package hayride:ai@0.0.61;
+package hayride:ai@0.0.65;
 
 interface model {
     use types.{message};
@@ -67,8 +67,8 @@ Using the `model` interface, you can define a component that exports the model i
 package hayride:models@0.0.1;
 
 world llm {
-    include hayride:wasip2/imports@0.0.61;
-    export hayride:ai/model@0.0.61;
+    include hayride:wasip2/imports@0.0.65;
+    export hayride:ai/model@0.0.65;
 }
 ```
 
@@ -81,9 +81,9 @@ Since the world imports wasip2 and the context interface, we need to create a `d
 In the `wit` directory, create a `deps.toml` file with the following content:
 
 ```toml
-wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_wasip2_v0.0.61.tar.gz"
-ai = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_ai_v0.0.61.tar.gz"
-mcp = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_mcp_v0.0.61.tar.gz"
+wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.65/hayride_wasip2_v0.0.65.tar.gz"
+ai = "https://github.com/hayride-dev/coven/releases/download/v0.0.65/hayride_ai_v0.0.65.tar.gz"
+mcp = "https://github.com/hayride-dev/coven/releases/download/v0.0.65/hayride_mcp_v0.0.65.tar.gz"
 ```
 
 Using `wit-deps`, we can pull in the dependencies for our WIT files.

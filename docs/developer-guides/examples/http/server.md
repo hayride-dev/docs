@@ -36,16 +36,16 @@ In the `wit/world.wit` file, define a world that will include the necessary impo
 
 In this case, we will be using the `hayride:wasip2/imports` module to provide the necessary WASI functionality. 
 
-Additionally we will be exporting `wasi:http/incoming-handler@0.2.0` and `hayride:http/config@0.0.61` to create a server component that can run on Hayride.
+Additionally we will be exporting `wasi:http/incoming-handler@0.2.0` and `hayride:http/config@0.0.65` to create a server component that can run on Hayride.
 
 ```wit
 package hayride-examples:http@0.0.1;
 
 world server {
-    include hayride:wasip2/imports@0.0.61;
+    include hayride:wasip2/imports@0.0.65;
  
     export wasi:http/incoming-handler@0.2.0;
-    export hayride:http/config@0.0.61;
+    export hayride:http/config@0.0.65;
 }
 ```
 
@@ -57,8 +57,8 @@ This file will specify the dependencies required for your Morph:
 
 ```toml
 http = "https://github.com/WebAssembly/wasi-http/archive/refs/tags/v0.2.0.tar.gz"
-wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_wasip2_v0.0.61.tar.gz"
-hayride-http = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_http_v0.0.61.tar.gz"
+wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.65/hayride_wasip2_v0.0.65.tar.gz"
+hayride-http = "https://github.com/hayride-dev/coven/releases/download/v0.0.65/hayride_http_v0.0.65.tar.gz"
 ```
 
 Using `wit-deps`, we can pull in the dependencies for our WIT files. 

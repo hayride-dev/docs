@@ -43,8 +43,8 @@ Additionally we will be using the `wasi:http/outgoing-handler@0.2.0` module to p
 package hayride-examples:http@0.0.1;
 
 world client {
-    include hayride:wasip2/imports@0.0.61;
-    include hayride:wasip2/exports@0.0.61;
+    include hayride:wasip2/imports@0.0.65;
+    include hayride:wasip2/exports@0.0.65;
  
     import wasi:http/outgoing-handler@0.2.0;
 }
@@ -58,7 +58,7 @@ This file will specify the dependencies required for your Morph:
 
 ```toml
 http = "https://github.com/WebAssembly/wasi-http/archive/refs/tags/v0.2.0.tar.gz"
-wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.61/hayride_wasip2_v0.0.61.tar.gz"
+wasip2 = "https://github.com/hayride-dev/coven/releases/download/v0.0.65/hayride_wasip2_v0.0.65.tar.gz"
 ```
 
 Using `wit-deps`, we can pull in the dependencies for our WIT files. 

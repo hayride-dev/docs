@@ -40,48 +40,48 @@ The Hayride runtime implements a collection of [WIT](https://github.com/WebAssem
 package hayride:runtime@0.0.1;
 
 world hayride-server {
-    include hayride:wasip2/imports@0.0.61;
+    include hayride:wasip2/imports@0.0.65;
     
     // exports
     export wasi:http/incoming-handler@0.2.0;
-    export hayride:http/config@0.0.61;
+    export hayride:http/config@0.0.65;
 }
 
 world hayride-cli {
-    include hayride:wasip2/imports@0.0.61;
-    include hayride:wasip2/exports@0.0.61;
+    include hayride:wasip2/imports@0.0.65;
+    include hayride:wasip2/exports@0.0.65;
 }
 
 world hayride-ws {
-    export hayride:socket/websocket@0.0.61;
+    export hayride:socket/websocket@0.0.65;
 }
 
 world hayride-ai {
     include wasi:nn/ml@0.2.0-rc-2024-10-28;
 
-    import hayride:ai/tensor-stream@0.0.61;
-    import hayride:ai/inference-stream@0.0.61;
-    import hayride:ai/graph-stream@0.0.61;
+    import hayride:ai/tensor-stream@0.0.65;
+    import hayride:ai/inference-stream@0.0.65;
+    import hayride:ai/graph-stream@0.0.65;
 
-    import hayride:ai/model-repository@0.0.61;
-    import hayride:ai/rag@0.0.61;
+    import hayride:ai/model-repository@0.0.65;
+    import hayride:ai/rag@0.0.65;
 }
 
 world hayride-core {
-    import hayride:core/version@0.0.61;
+    import hayride:core/version@0.0.65;
 }
 
 world hayride-api {
-    import hayride:core/types@0.0.61;
+    import hayride:core/types@0.0.65;
 }
 
 world hayride-silo {
-    import hayride:silo/threads@0.0.61;
-    import hayride:silo/process@0.0.61;
+    import hayride:silo/threads@0.0.65;
+    import hayride:silo/process@0.0.65;
 }
 
 world hayride-wac {
-    import hayride:wac/wac@0.0.61;
+    import hayride:wac/wac@0.0.65;
 }
 ```
 
