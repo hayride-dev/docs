@@ -13,20 +13,20 @@ The CLI morph itself is a WebAssembly Component that can be represented through 
 
 ```wit
 world cli {
-    include hayride:wasip2/imports@0.0.61;
+    include hayride:wasip2/imports@0.0.65;
 
     // silo imports
-    import hayride:silo/threads@0.0.61;
-    import hayride:silo/process@0.0.61;
+    import hayride:silo/threads@0.0.65;
+    import hayride:silo/process@0.0.65;
 
     // wasi imports
     import wasi:http/outgoing-handler@0.2.0;
 
     // wac imports
-    import hayride:wac/wac@0.0.61;
+    import hayride:wac/wac@0.0.65;
 
     // exports
-    include hayride:wasip2/exports@0.0.61;
+    include hayride:wasip2/exports@0.0.65;
 }
 ```
 
@@ -42,7 +42,7 @@ Always refer to the git repository, [Coven](https://github.com/hayride-dev/coven
 
 The CLI includes the following `public` imports from the Hayride platform:
 - `wasi:http/outgoing-handler@0.2.0`: A WebAssembly HTTP client that allows the CLI to make HTTP requests to the Hayride platform.
-- `hayride:wac/wac@0.0.61`: WebAssembly Composition import that provides `WAC` functionality for composing WebAssembly components.
+- `hayride:wac/wac@0.0.65`: WebAssembly Composition import that provides `WAC` functionality for composing WebAssembly components.
 
 These imports provide the necessary functionality for the CLI to interact with the Hayride platform, including HTTP client capabilities, WAC (WebAssembly Component) imports, and core configuration management. Each of these imports is defined publicly in our [Coven](https://github.com/hayride-dev/coven) repository, allowing for additional implementations. 
 
@@ -51,7 +51,7 @@ These imports provide the necessary functionality for the CLI to interact with t
 Hayride has `private` or `reserved` imports that are not intended for `public` use. These imports are restricted to the Hayride platform and are used internally by the CLI. 
 
 They include:
-- `hayride:silo/threads@0.0.61` and `hayride:silo/process@0.0.61`: Silo implements basic parallelism and concurrency primitives for the Hayride platform. It provides a way to run Morphs in parallel and manage their execution. This is not intended for public use and is reserved for the Hayride platform. More holistic Async support is being discussed by the WebAssembly community and may replace this in the future.
+- `hayride:silo/threads@0.0.65` and `hayride:silo/process@0.0.65`: Silo implements basic parallelism and concurrency primitives for the Hayride platform. It provides a way to run Morphs in parallel and manage their execution. This is not intended for public use and is reserved for the Hayride platform. More holistic Async support is being discussed by the WebAssembly community and may replace this in the future.
 
 :::info 
 For a complete overview Hayride's WIT definition, please refer to the our [reference documentation](../../reference/interfaces/)
